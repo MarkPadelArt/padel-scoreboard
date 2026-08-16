@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -292,6 +293,12 @@
         <button class="btn-ghost" onclick="changeZoom(0.1)">+</button>
       </div>
       <span id="syncStatus" class="syncdot warn hide-on-tv-idle">&#9679; Connecting&hellip;</span>
+      <div class="roundctrl editctrls">
+        <select id="tournamentSelect" onchange="switchTournament(this.value)"
+          style="background:var(--bg2);color:var(--white);border:1px solid rgba(140,198,63,0.3);border-radius:8px;padding:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;"></select>
+        <button class="btn-ghost" onclick="newTournament()">+ Tournament</button>
+        <button class="btn-ghost" onclick="deleteTournament()">Delete</button>
+      </div>
       <button class="btn-ghost editctrls" onclick="addTeam()">+ Team</button>
       <button class="btn-ghost editctrls" onclick="toggleMatchupPanel()">Matchups</button>
       <button class="btn-ghost hide-on-tv-idle" id="tvBtn" onclick="toggleTV()">TV Mode</button>
@@ -313,6 +320,12 @@
         <span id="courtCount">3</span>
         <button class="btn-ghost" onclick="changeCourts(1)">+</button>
       </div>
+    </div>
+    <div class="matchup-head" style="align-items:flex-start;">
+      <textarea id="autoNamesInput" rows="3"
+        style="flex:1;min-width:240px;background:rgba(245,247,243,0.06);border:1px solid rgba(140,198,63,0.3);border-radius:8px;color:var(--white);padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;"
+        placeholder="Paste player/team names, one per line — Auto-Generate will shuffle them into matchups for every round, no need to type any matchups by hand."></textarea>
+      <button class="btn-lime" onclick="autoGenerateMatchups()" style="align-self:center;">Auto-Generate Matchups</button>
     </div>
     <div id="courtRows"></div>
   </div>
@@ -390,6 +403,9 @@ let state = {
   ],
   matchups: [] // matchups[roundIdx][courtIdx] = {a: teamId|null, b: teamId|null}
 };
+// boards holds every tournament; state always points at the active tournament's data.
+// Kept as one object so the existing Worker/Gist (which just stores one blob) needs no changes.
+let boards = { activeId: 'default', tournaments: { default: state } };
 let nextId = 3;
 let saveTimer = null;
 let zoom = 1;
@@ -399,6 +415,76 @@ let flashZoomLevel = 1;
 const WORKER_URL = "https://padel-scoreboard-sync.markmauricefajardo.workers.dev";
 const LOCAL_CACHE_KEY = "padelScoreboardCache";
 let lastSavedSnapshot = "";
+
+function recalcNextId(){
+  nextId = Math.max(0, ...state.teams.map(t=>t.id), 0) + 1;
+}
+
+// Accepts whatever we just fetched/parsed from storage and normalizes it into
+// the {activeId, tournaments} shape, migrating older single-tournament saves.
+function adoptBoards(parsed){
+  if(parsed && parsed.tournaments && typeof parsed.tournaments === 'object'){
+    boards = parsed;
+    if(!boards.tournaments[boards.activeId]) boards.activeId = Object.keys(boards.tournaments)[0];
+  } else if(parsed && typeof parsed === 'object'){
+    boards = { activeId: 'default', tournaments: { default: parsed } };
+  }
+  state = boards.tournaments[boards.activeId];
+  recalcNextId();
+}
+
+function tournamentList(){
+  return Object.keys(boards.tournaments).map(id=>({id, label: boards.tournaments[id].category || id}));
+}
+
+function renderTournamentSwitcher(){
+  const sel = document.getElementById('tournamentSelect');
+  if(!sel) return;
+  sel.innerHTML = '';
+  tournamentList().forEach(t=>{
+    const opt = document.createElement('option');
+    opt.value = t.id; opt.textContent = t.label;
+    if(t.id === boards.activeId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function switchTournament(id){
+  if(!boards.tournaments[id]) return;
+  boards.activeId = id;
+  state = boards.tournaments[id];
+  recalcNextId();
+  ensureMatchupsShape();
+  editRound = 0;
+  render();
+  renderTournamentSwitcher();
+  fitTitle();
+  if(document.getElementById('matchupPanel').style.display !== 'none') renderMatchupPanel();
+}
+
+function newTournament(){
+  const name = prompt('Name for the new tournament:', 'New Tournament');
+  if(name === null) return;
+  const id = 't' + Date.now();
+  boards.tournaments[id] = {
+    category: name.trim() || 'New Tournament',
+    rounds: 5, courts: 3,
+    teams: [], matchups: [], courtNames: []
+  };
+  switchTournament(id);
+  queueSave();
+}
+
+function deleteTournament(){
+  const ids = Object.keys(boards.tournaments);
+  if(ids.length <= 1){ alert('At least one tournament must remain.'); return; }
+  if(!confirm('Delete "' + state.category + '" and all its data? This cannot be undone.')) return;
+  delete boards.tournaments[boards.activeId];
+  const nextActive = Object.keys(boards.tournaments)[0];
+  boards.activeId = nextActive;
+  switchTournament(nextActive);
+  queueSave();
+}
 
 function ensureMatchupsShape(){
   if(!state.courts) state.courts = 3;
@@ -468,7 +554,7 @@ function updateSyncStatus(s){
 async function loadState(){
   if(!isConfigured()){
     updateSyncStatus('unconfigured');
-    ensureMatchupsShape(); render(); fitTitle();
+    ensureMatchupsShape(); render(); renderTournamentSwitcher(); fitTitle();
     pollLoop();
     return;
   }
@@ -476,9 +562,8 @@ async function loadState(){
   try{
     const value = await fetchBoard();
     if(value && value !== '{}' && value.trim() !== ''){
-      state = JSON.parse(value);
-      nextId = Math.max(0, ...state.teams.map(t=>t.id), 0) + 1;
-      lastSavedSnapshot = value;
+      adoptBoards(JSON.parse(value));
+      lastSavedSnapshot = JSON.stringify(boards);
     }
     updateSyncStatus('synced');
   }catch(e){
@@ -487,8 +572,7 @@ async function loadState(){
     try{
       const cached = localStorage.getItem(LOCAL_CACHE_KEY);
       if(cached){
-        state = JSON.parse(cached);
-        nextId = Math.max(0, ...state.teams.map(t=>t.id), 0) + 1;
+        adoptBoards(JSON.parse(cached));
       }
     }catch(e2){ /* corrupt or unavailable cache, ignore */ }
     updateSyncStatus('error');
@@ -496,6 +580,7 @@ async function loadState(){
   }
   ensureMatchupsShape();
   render();
+  renderTournamentSwitcher();
   fitTitle();
   pollLoop();
 }
@@ -506,8 +591,8 @@ function scheduleSyncRetry(){
   syncRetryTimer = setTimeout(async ()=>{
     if(!isConfigured()) return;
     try{
-      await saveBoard(state);
-      lastSavedSnapshot = JSON.stringify(state);
+      await saveBoard(boards);
+      lastSavedSnapshot = JSON.stringify(boards);
       updateSyncStatus('synced');
     }catch(e){
       updateSyncStatus('error');
@@ -521,8 +606,8 @@ function queueSave(){
   saveTimer = setTimeout(async ()=>{
     if(!isConfigured()){ updateSyncStatus('unconfigured'); return; }
     try{
-      await saveBoard(state);
-      lastSavedSnapshot = JSON.stringify(state);
+      await saveBoard(boards);
+      lastSavedSnapshot = JSON.stringify(boards);
       updateSyncStatus('synced');
       clearTimeout(syncRetryTimer);
     }
@@ -542,10 +627,11 @@ function pollLoop(){
     try{
       const value = await fetchBoard();
       if(value && value !== lastSavedSnapshot && value !== '{}' && value.trim() !== ''){
-        state = JSON.parse(value);
+        adoptBoards(JSON.parse(value));
         lastSavedSnapshot = value;
         ensureMatchupsShape();
         render();
+        renderTournamentSwitcher();
         fitTitle();
       }
       updateSyncStatus('synced');
@@ -555,6 +641,7 @@ function pollLoop(){
 
 document.getElementById('category').addEventListener('input', e=>{
   state.category = e.target.value; fitTitle(); queueSave();
+  renderTournamentSwitcher();
   const fEl = document.getElementById('flashEventName');
   if(fEl) fEl.textContent = state.category;
 });
@@ -629,6 +716,32 @@ function updateMatchupScore(courtIdx, side, value){
   if(!touched) return;
   render();
   if(document.getElementById('flash').classList.contains('show')) renderFlash();
+  queueSave();
+}
+
+// Shuffles a plain list of player/team names into random court matchups for
+// every round (Americano-style) — no manual matchup typing needed.
+function autoGenerateMatchups(){
+  const raw = document.getElementById('autoNamesInput').value;
+  const names = [...new Set(raw.split('\n').map(s=>s.trim()).filter(Boolean))];
+  if(names.length < 4){
+    alert('Add at least 4 names (one per line) to generate matchups.');
+    return;
+  }
+  if(!confirm('This will replace the matchups for every round with a new random draw. Continue?')) return;
+
+  ensureMatchupsShape();
+  for(let r=0; r<state.rounds; r++){
+    const shuffled = [...names].sort(()=>Math.random()-0.5);
+    for(let c=0; c<state.courts; c++){
+      const group = shuffled.slice(c*4, c*4+4);
+      state.matchups[r][c] = {
+        a1: group[0] || '', a2: group[1] || '',
+        b1: group[2] || '', b2: group[3] || ''
+      };
+    }
+  }
+  renderMatchupPanel();
   queueSave();
 }
 
@@ -718,8 +831,12 @@ function updateName(id, val){
   t.name = val; queueSave();
 }
 function resetBoard(){
-  if(!confirm("Clear all teams and scores?")) return;
-  state = {category: state.category, rounds: 5, teams: []};
+  if(!confirm("Clear all teams and scores for this tournament?")) return;
+  const fresh = {category: state.category, rounds: 5, courts: state.courts || 3, teams: [], matchups: [], courtNames: []};
+  boards.tournaments[boards.activeId] = fresh;
+  state = fresh;
+  recalcNextId();
+  ensureMatchupsShape();
   render(); queueSave();
 }
 
