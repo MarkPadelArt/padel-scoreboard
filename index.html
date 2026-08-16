@@ -321,11 +321,8 @@
         <button class="btn-ghost" onclick="changeCourts(1)">+</button>
       </div>
     </div>
-    <div class="matchup-head" style="align-items:flex-start;">
-      <textarea id="autoNamesInput" rows="3"
-        style="flex:1;min-width:240px;background:rgba(245,247,243,0.06);border:1px solid rgba(140,198,63,0.3);border-radius:8px;color:var(--white);padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;"
-        placeholder="Paste player/team names, one per line — Auto-Generate will shuffle them into matchups for every round, no need to type any matchups by hand."></textarea>
-      <button class="btn-lime" onclick="autoGenerateMatchups()" style="align-self:center;">Auto-Generate Matchups</button>
+    <div class="matchup-head">
+      <button class="btn-lime" onclick="autoGenerateMatchups()" title="Uses the team names already added on the leaderboard — every player partners with every other player exactly once.">&#8635; Auto-Generate Matchups</button>
     </div>
     <div id="courtRows"></div>
   </div>
@@ -719,30 +716,98 @@ function updateMatchupScore(courtIdx, side, value){
   queueSave();
 }
 
-// Shuffles a plain list of player/team names into random court matchups for
-// every round (Americano-style) — no manual matchup typing needed.
+// Circle-method round robin: fixes one player and rotates the rest so that
+// every possible pair of players ends up partnered exactly once across
+// n-1 rounds (n = player count, padded with a bye if odd).
+function generatePartnerRotation(players){
+  let arr = [...players];
+  if(arr.length % 2 === 1) arr.push(null); // null = bye slot
+  const n = arr.length;
+  const fixed = arr[0];
+  let rotating = arr.slice(1);
+  const rounds = [];
+  for(let r=0; r<n-1; r++){
+    const order = [fixed, ...rotating];
+    const pairs = [];
+    for(let i=0; i<n/2; i++){
+      pairs.push([order[i], order[n-1-i]]);
+    }
+    rounds.push(pairs);
+    rotating.unshift(rotating.pop());
+  }
+  return rounds; // n-1 rounds, each an array of [playerA, playerB] pairs
+}
+
+// Groups a round's partner-pairs two-at-a-time into courts (pair vs pair).
+// If there's an odd pair left over, that pair sits out the round.
+function pairsToCourts(pairs){
+  const courts = [];
+  for(let i=0; i+1<pairs.length; i+=2){
+    const [a1,a2] = pairs[i];
+    const [b1,b2] = pairs[i+1];
+    courts.push({a1:a1||'', a2:a2||'', b1:b1||'', b2:b2||''});
+  }
+  return courts;
+}
+
+// Auto-generates matchups from the team names already on the leaderboard —
+// no separate name entry needed. Builds a full partner-rotation schedule so
+// every player partners with every other player exactly once (Americano-style).
 function autoGenerateMatchups(){
-  const raw = document.getElementById('autoNamesInput').value;
-  const names = [...new Set(raw.split('\n').map(s=>s.trim()).filter(Boolean))];
-  if(names.length < 4){
-    alert('Add at least 4 names (one per line) to generate matchups.');
+  const names = state.teams.map(t=>(t.name||'').trim()).filter(Boolean);
+  const unique = [...new Set(names)];
+
+  if(unique.length < names.length){
+    alert('Two or more teams have the same name. Make each team name unique before auto-generating matchups.');
     return;
   }
-  if(!confirm('This will replace the matchups for every round with a new random draw. Continue?')) return;
+  if(unique.length < 4){
+    alert('Add at least 4 teams (use "+ Team") on the leaderboard before auto-generating matchups.');
+    return;
+  }
+  const rotation = generatePartnerRotation(unique);
+  const fullRounds = rotation.length; // rounds needed for a complete no-repeat rotation
+  let neededCourts = Math.max(...rotation.map(pairs=>Math.floor(pairs.length/2)));
+  let courtsTruncated = false;
+  if(neededCourts > 8){ neededCourts = 8; courtsTruncated = true; }
 
+  // Respect whatever round count is already set with the Round +/- stepper.
+  // Only fall back to the full rotation length if rounds haven't been set at all.
+  const roundsToUse = state.rounds || fullRounds;
+
+  if(!confirm(`This will generate matchups for ${roundsToUse} round${roundsToUse===1?'':'s'} using a no-repeat partner rotation (a complete rotation for these players needs ${fullRounds} rounds). Existing matchups will be replaced. Continue?`)) return;
+
+  state.rounds = roundsToUse;
+  state.courts = neededCourts;
+  state.teams.forEach(t=>{
+    while(t.scores.length < state.rounds) t.scores.push(0);
+    while(t.scores.length > state.rounds) t.scores.pop();
+  });
   ensureMatchupsShape();
+
   for(let r=0; r<state.rounds; r++){
-    const shuffled = [...names].sort(()=>Math.random()-0.5);
+    // Wrap around if more rounds are requested than a full rotation covers —
+    // combos will start repeating past round `fullRounds`.
+    const pairsForRound = rotation[r % fullRounds];
+    const courts = pairsToCourts(pairsForRound);
     for(let c=0; c<state.courts; c++){
-      const group = shuffled.slice(c*4, c*4+4);
-      state.matchups[r][c] = {
-        a1: group[0] || '', a2: group[1] || '',
-        b1: group[2] || '', b2: group[3] || ''
-      };
+      state.matchups[r][c] = courts[c] || {a1:'',a2:'',b1:'',b2:''};
     }
   }
+
+  render();
   renderMatchupPanel();
   queueSave();
+
+  if(courtsTruncated){
+    alert('Heads up: with this many players, fitting everyone needs more courts than the app supports (max 8), so some players will sit out each round.');
+  } else if(roundsToUse < fullRounds){
+    alert(`Generated ${roundsToUse} of ${fullRounds} rounds needed for a complete rotation — not every possible partnership will appear. Set Rounds to ${fullRounds} and regenerate for full coverage.`);
+  } else if(roundsToUse > fullRounds){
+    alert(`A complete no-repeat rotation only needs ${fullRounds} rounds — the extra rounds beyond that will start repeating partner combinations.`);
+  } else if(unique.length % 4 !== 0){
+    alert('Since the player count isn\'t a multiple of 4, a pair of players will sit out on some rounds to keep the rotation fair.');
+  }
 }
 
 function toggleMatchupPanel(){
