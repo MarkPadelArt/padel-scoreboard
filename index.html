@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -322,7 +321,7 @@
       </div>
     </div>
     <div class="matchup-head">
-      <button class="btn-lime" onclick="autoGenerateMatchups()" title="Uses the team names already added on the leaderboard — every player partners with every other player exactly once.">&#8635; Auto-Generate Matchups</button>
+      <button class="btn-lime" onclick="autoGenerateMatchups()" title="Uses the team names already added on the leaderboard — every player partners with every other player exactly once, and courts are matched up each round to keep opponents varied too.">&#8635; Auto-Generate Matchups</button>
     </div>
     <div id="courtRows"></div>
   </div>
@@ -750,6 +749,98 @@ function pairsToCourts(pairs){
   return courts;
 }
 
+function shuffleArr(arr){
+  const out = arr.slice();
+  for(let i=out.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [out[i],out[j]] = [out[j],out[i]];
+  }
+  return out;
+}
+
+// Given the full sequence of rounds' partner-pairs (as produced by
+// generatePartnerRotation, one entry per round), decides which pair faces
+// which pair each round. Partners are already fixed by the rotation — this
+// only chooses the pair-vs-pair matchups — aiming to (a) never repeat the
+// exact same opponent in back-to-back rounds, (b) avoid repeating an
+// opponent from two rounds ago where possible, and (c) spread opponents out
+// as evenly as possible across the whole schedule. Uses randomized search:
+// for each round it tries many random pairings of the round's teams and
+// keeps the lowest-penalty one, then updates a running opponent history
+// before moving to the next round.
+function scheduleCourtsAvoidingRepeats(roundsPairs){
+  const opponentCount = Object.create(null); // "playerA|||playerB" -> times faced
+  let prevRoundKeys = new Set();
+  let prevPrevRoundKeys = new Set();
+
+  function oppKey(a,b){ return a < b ? a+'|||'+b : b+'|||'+a; }
+
+  const scheduledRounds = [];
+
+  for(const pairs of roundsPairs){
+    const list = pairs.slice();
+    let best = null;
+    let bestScore = Infinity;
+    const attempts = list.length <= 8 ? 250 : 450;
+
+    for(let attempt=0; attempt<attempts; attempt++){
+      const shuffled = shuffleArr(list);
+      const matching = [];
+      for(let i=0; i+1<shuffled.length; i+=2){
+        matching.push([shuffled[i], shuffled[i+1]]);
+      }
+
+      let score = 0;
+      for(const [pa,pb] of matching){
+        const playersA = pa.filter(Boolean);
+        const playersB = pb.filter(Boolean);
+        for(const x of playersA){
+          for(const y of playersB){
+            const k = oppKey(x,y);
+            const timesSoFar = opponentCount[k] || 0;
+            score += timesSoFar * timesSoFar; // quadratic: spreads repeats out evenly
+            if(prevRoundKeys.has(k)) score += 5000;      // hard: never repeat last round's opponent
+            else if(prevPrevRoundKeys.has(k)) score += 150; // soft: try to avoid repeating from 2 rounds ago
+          }
+        }
+      }
+
+      if(score < bestScore){
+        bestScore = score;
+        best = matching;
+        if(bestScore === 0) break;
+      }
+    }
+
+    scheduledRounds.push(best || []);
+
+    const thisRoundKeys = new Set();
+    for(const [pa,pb] of best || []){
+      const playersA = pa.filter(Boolean);
+      const playersB = pb.filter(Boolean);
+      for(const x of playersA){
+        for(const y of playersB){
+          const k = oppKey(x,y);
+          opponentCount[k] = (opponentCount[k]||0) + 1;
+          thisRoundKeys.add(k);
+        }
+      }
+    }
+    prevPrevRoundKeys = prevRoundKeys;
+    prevRoundKeys = thisRoundKeys;
+  }
+
+  return scheduledRounds; // array of rounds, each an array of [pairA, pairB] matchups
+}
+
+function matchingToCourts(matching){
+  return matching.map(([pa,pb])=>{
+    const [a1,a2] = pa;
+    const [b1,b2] = pb;
+    return {a1:a1||'', a2:a2||'', b1:b1||'', b2:b2||''};
+  });
+}
+
 // Auto-generates matchups from the team names already on the leaderboard —
 // no separate name entry needed. Builds a full partner-rotation schedule so
 // every player partners with every other player exactly once (Americano-style).
@@ -775,7 +866,7 @@ function autoGenerateMatchups(){
   // Only fall back to the full rotation length if rounds haven't been set at all.
   const roundsToUse = state.rounds || fullRounds;
 
-  if(!confirm(`This will generate matchups for ${roundsToUse} round${roundsToUse===1?'':'s'} using a no-repeat partner rotation (a complete rotation for these players needs ${fullRounds} rounds). Existing matchups will be replaced. Continue?`)) return;
+  if(!confirm(`This will generate matchups for ${roundsToUse} round${roundsToUse===1?'':'s'} using a no-repeat partner rotation (a complete rotation for these players needs ${fullRounds} rounds), with courts matched up each round to also avoid repeat opponents where possible. Existing matchups will be replaced. Continue?`)) return;
 
   state.rounds = roundsToUse;
   state.courts = neededCourts;
@@ -785,11 +876,21 @@ function autoGenerateMatchups(){
   });
   ensureMatchupsShape();
 
+  // Build the sequence of rounds' partner-pairs first (with wraparound if
+  // extra rounds were requested beyond a full rotation), then let the
+  // opponent-aware scheduler decide which pair faces which pair each round —
+  // it looks across the whole sequence so it can avoid repeating the same
+  // opponent in back-to-back (or near-consecutive) rounds.
+  const roundsPairsSequence = [];
   for(let r=0; r<state.rounds; r++){
     // Wrap around if more rounds are requested than a full rotation covers —
     // combos will start repeating past round `fullRounds`.
-    const pairsForRound = rotation[r % fullRounds];
-    const courts = pairsToCourts(pairsForRound);
+    roundsPairsSequence.push(rotation[r % fullRounds]);
+  }
+  const scheduledRounds = scheduleCourtsAvoidingRepeats(roundsPairsSequence);
+
+  for(let r=0; r<state.rounds; r++){
+    const courts = matchingToCourts(scheduledRounds[r] || []);
     for(let c=0; c<state.courts; c++){
       state.matchups[r][c] = courts[c] || {a1:'',a2:'',b1:'',b2:''};
     }
