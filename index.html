@@ -90,13 +90,6 @@
 
   .hide-on-tv-idle{transition:opacity .4s ease;}
   body.controls-hidden .hide-on-tv-idle{opacity:0;pointer-events:none;}
-  body.tv header{transition:padding .3s ease;}
-  /* ---- idle-hide: close the gap under the title, no resizing ---- */
-  body.controls-hidden header{
-    margin-bottom:0;padding-bottom:0;border-bottom-width:1px;
-    transition:margin .3s ease, padding .3s ease;
-  }
-  body.controls-hidden .wrap{padding-top:10px;}
   #zoomLabel{min-width:42px;text-align:center;}
 
   /* ---- zoomable table stage ---- */
@@ -193,6 +186,16 @@
   .reveal-table tr.rank-3{background:linear-gradient(90deg, rgba(196,120,74,0.14), transparent 70%);}
   .reveal-table tr.top3 td{font-size:34px;padding:24px 14px;}
   .reveal-table td.reveal-rankcell{font-size:0.75em;}
+  .reveal-champion-banner{margin-bottom:28px;}
+  .reveal-champion-banner .rcb-row{display:flex;align-items:baseline;gap:18px;margin-bottom:8px;}
+  .reveal-champion-banner .rcb-label{
+    font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+    color:rgba(245,247,243,0.45);width:150px;flex-shrink:0;
+  }
+  .reveal-champion-banner .rcb-name{font-family:'Archivo Black',sans-serif;font-size:clamp(28px,4.2vw,46px);color:var(--white);}
+  .reveal-champion-banner .rcb-row.champion .rcb-label{color:var(--gold);}
+  .reveal-champion-banner .rcb-row.champion .rcb-name{color:var(--gold);}
+  .reveal-champion-banner .rcb-row.runnerup .rcb-name{color:var(--silver);}
   .reveal-controls{margin-top:26px;display:flex;gap:12px;transition:opacity .3s ease;}
   .reveal-controls.controls-hidden{opacity:0;pointer-events:none;}
   .reveal-zoom{
@@ -219,6 +222,9 @@
   .flash-brand{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:20px;opacity:0;}
   .flash-brand img{height:44px;width:auto;display:block;filter:drop-shadow(0 0 8px rgba(140,198,63,0.25));}
   .flash-brand .fb-name{font-family:'Archivo Black',sans-serif;font-size:clamp(20px,3vw,30px);color:var(--white);line-height:1.05;}
+  .brand-top{margin-bottom:24px;}
+  .brand-top img{height:26px;}
+  .brand-top .fb-name{font-size:15px;letter-spacing:.02em;}
   .matchup-head{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
   .courtrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(140,198,63,0.08);flex-wrap:wrap;}
   .courtrow:last-child{border-bottom:none;}
@@ -241,6 +247,35 @@
   }
   .pairgroup{display:flex;flex-direction:column;gap:6px;flex:1;min-width:110px;}
   .pairgroup .matchup-input{width:100%;}
+
+  /* ---- playoff bracket panel ---- */
+  #playoffPanel{
+    margin:0 0 22px;padding:16px;border-radius:12px;
+    background:rgba(240,180,41,0.05);border:1px solid rgba(240,180,41,0.2);
+  }
+  .stagetabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .stagetab{
+    font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.05em;text-transform:uppercase;
+    background:rgba(240,180,41,0.08);color:var(--white);border:1px solid rgba(240,180,41,0.3);
+    border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:700;
+  }
+  .stagetab.active{background:var(--gold);color:var(--ink);border-color:var(--gold);}
+  .playoffrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(240,180,41,0.1);flex-wrap:wrap;}
+  .playoffrow:last-child{border-bottom:none;}
+  .playoffrow .matchlabel{
+    font-family:'Space Mono',monospace;font-size:12px;color:var(--gold);width:80px;flex-shrink:0;
+  }
+  .playoffrow .matchup-input{
+    flex:1;min-width:0;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+    background:rgba(245,247,243,0.06);color:var(--white);border:1px solid rgba(240,180,41,0.25);
+    border-radius:6px;padding:8px 10px;
+  }
+  .playoffrow .matchup-score{
+    width:44px;flex-shrink:0;text-align:center;font-family:'Space Mono',monospace;font-size:14px;font-weight:700;
+    background:rgba(240,180,41,0.1);color:var(--gold);border:1px solid rgba(240,180,41,0.3);
+    border-radius:6px;padding:8px 2px;
+  }
+  .playoffrow .vs{font-family:'Space Mono',monospace;font-size:12px;color:rgba(245,247,243,0.4);flex-shrink:0;}
 
   /* ---- flash matchups overlay ---- */
   #flash{
@@ -280,6 +315,83 @@
   .flash-anim .flashcard:nth-child(5){animation-delay:.5s;}
   .flash-anim .flashcard:nth-child(6){animation-delay:.6s;}
   .flash-anim .flashcard:nth-child(n+7){animation-delay:.7s;}
+
+  /* ---- flash playoff bracket overlay ---- */
+  #bracketFlash{
+    position:fixed;inset:0;
+    display:none;align-items:center;justify-content:center;flex-direction:column;
+    z-index:51;text-align:center;padding:clamp(8px,2vh,20px) 16px;overflow-y:auto;overflow-x:hidden;
+    --bk-title-h:clamp(16px,3.6vh,30px);
+    background-color:#040302;
+    background-image:
+      radial-gradient(circle at 12% 15%, rgba(255,90,60,0.24), transparent 34%),
+      radial-gradient(circle at 88% 12%, rgba(70,130,255,0.24), transparent 34%),
+      radial-gradient(circle at 15% 90%, rgba(170,70,255,0.20), transparent 36%),
+      radial-gradient(circle at 90% 85%, rgba(65,225,150,0.20), transparent 36%),
+      radial-gradient(circle at 50% 50%, rgba(140,198,63,0.05), transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(140,198,63,0.04) 39px, rgba(140,198,63,0.04) 40px);
+  }
+  #bracketFlash.show{display:flex;}
+  #bracketFlash .flash-brand{margin-bottom:clamp(8px,1.6vh,24px);}
+  .bracket-scroll{
+    width:100%;max-width:1500px;overflow-x:auto;padding:6px 0;flex-shrink:0;
+    scrollbar-width:thin;scrollbar-color:rgba(140,198,63,0.35) transparent;
+  }
+  .bracket-scroll::-webkit-scrollbar{height:5px;}
+  .bracket-scroll::-webkit-scrollbar-track{background:transparent;}
+  .bracket-scroll::-webkit-scrollbar-thumb{background:rgba(140,198,63,0.35);border-radius:3px;}
+  .bracket-columns{display:flex;align-items:stretch;height:clamp(220px,64vh,620px);min-width:min(920px,97vw);margin:0 auto;transform-origin:center center;}
+  .bracket-col-wrap{display:flex;flex-direction:column;width:clamp(160px,23vw,290px);flex-shrink:0;}
+  .bracket-col-title{
+    height:var(--bk-title-h);line-height:var(--bk-title-h);flex-shrink:0;text-align:center;
+    font-family:'Space Mono',monospace;font-size:clamp(9px,1.7vh,13px);letter-spacing:.22em;text-transform:uppercase;
+    color:rgba(245,247,243,0.55);
+  }
+  .bracket-col{flex:1;display:flex;flex-direction:column;justify-content:space-around;}
+  .bracket-connector{display:flex;flex-direction:column;width:clamp(24px,4vw,50px);flex-shrink:0;}
+  .bracket-connector-spacer{height:var(--bk-title-h);flex-shrink:0;}
+  .bracket-connector-lines{position:relative;flex:1;}
+  .conn-h{position:absolute;height:2px;background:rgba(140,198,63,0.45);}
+  .conn-v{position:absolute;width:2px;background:rgba(140,198,63,0.45);}
+
+  /* ---- bracket match: two stacked team pills, seed badge + name + score ---- */
+  .bracket-match{display:flex;flex-direction:column;gap:clamp(3px,1vh,8px);opacity:0;}
+  .bracket-pill{
+    display:flex;align-items:stretch;border-radius:9px;overflow:hidden;
+    border:1px solid rgba(140,198,63,0.3);background:rgba(17,22,18,0.72);
+  }
+  .bp-seed{
+    width:clamp(18px,3vw,34px);flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(140,198,63,0.14);color:var(--lime-bright);
+    font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(9px,1.7vh,15px);
+  }
+  .bp-name{
+    flex:1;min-width:0;padding:clamp(3px,1.3vh,12px) clamp(6px,1.4vw,14px);
+    font-family:'DM Sans',sans-serif;font-weight:700;font-size:clamp(10px,2.1vh,18px);
+    color:var(--white);text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .bp-score{
+    width:clamp(20px,3.6vw,42px);flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(9px,1.9vh,17px);color:rgba(245,247,243,0.5);
+    border-left:1px solid rgba(140,198,63,0.18);
+  }
+  .bracket-pill.bp-win{border-color:rgba(240,180,41,0.7);background:rgba(240,180,41,0.12);}
+  .bracket-pill.bp-win .bp-seed{background:rgba(240,180,41,0.22);color:var(--gold);}
+  .bracket-pill.bp-win .bp-name, .bracket-pill.bp-win .bp-score{color:var(--gold);}
+  .round-final .bracket-pill{border-color:rgba(240,180,41,0.4);}
+
+  .bracket-champion{
+    margin-top:clamp(8px,1.8vh,20px);opacity:0;flex-shrink:0;
+    font-family:'Archivo Black',sans-serif;font-size:clamp(16px,2.6vh,28px);
+    color:var(--gold);letter-spacing:.02em;
+  }
+  .bracket-anim .flash-brand{animation:fadeUp .5s ease forwards;}
+  .bracket-anim .bracket-match{animation:fadeUp .45s ease forwards;}
+  .bracket-anim .bracket-match:nth-of-type(1){animation-delay:.1s;}
+  .bracket-anim .bracket-match:nth-of-type(2){animation-delay:.18s;}
+  .bracket-anim .bracket-match:nth-of-type(3){animation-delay:.26s;}
+  .bracket-anim .bracket-match:nth-of-type(4){animation-delay:.34s;}
+  .bracket-anim .bracket-champion{animation:fadeUp .5s ease forwards;animation-delay:.55s;}
 </style>
 </head>
 <body>
@@ -313,8 +425,10 @@
       </div>
       <button class="btn-ghost editctrls" onclick="addTeam()">+ Team</button>
       <button class="btn-ghost editctrls" onclick="toggleMatchupPanel()">Matchups</button>
+      <button class="btn-ghost editctrls" onclick="togglePlayoffPanel()">🏆 Playoffs</button>
       <button class="btn-ghost hide-on-tv-idle" id="tvBtn" onclick="toggleTV()">TV Mode</button>
       <button class="btn-clay hide-on-tv-idle" onclick="openFlash()">Flash Matchups</button>
+      <button class="btn-clay hide-on-tv-idle" onclick="openBracketFlash()">Flash Playoff Bracket</button>
       <button class="btn-lime hide-on-tv-idle" onclick="startReveal()">Start Reveal</button>
     </div>
   </header>
@@ -337,6 +451,19 @@
       <button class="btn-lime" onclick="autoGenerateMatchups()" title="Uses the team names already added on the leaderboard — every player partners with every other player exactly once, and courts are matched up each round to keep opponents varied too.">&#8635; Auto-Generate Matchups</button>
     </div>
     <div id="courtRows"></div>
+  </div>
+
+  <div id="playoffPanel" class="editctrls" style="display:none;">
+    <div class="stagetabs">
+      <button class="stagetab" id="stageTab-quarterfinals" onclick="setPlayoffStage('quarterfinals')">Quarter Finals</button>
+      <button class="stagetab" id="stageTab-semifinals" onclick="setPlayoffStage('semifinals')">Semi Finals</button>
+      <button class="stagetab" id="stageTab-finals" onclick="setPlayoffStage('finals')">Finals</button>
+    </div>
+    <div class="matchup-head">
+      <button class="btn-lime" onclick="autoFillPlayoffs()" title="Fills this stage from the current group-stage standings (top 8 for quarters, top 4 for semis, top 2 for finals). You can still edit any name afterward.">&#8635; Auto-Fill from Standings</button>
+      <span class="hint" id="playoffHint"></span>
+    </div>
+    <div id="playoffRows"></div>
   </div>
 
   <div id="tvStage">
@@ -369,6 +496,7 @@
         <div class="reveal-title" id="revealEventName"></div>
       </div>
     </div>
+    <div class="reveal-champion-banner" id="revealChampionBanner"></div>
     <div class="reveal-divider"></div>
     <table class="reveal-table" id="revealTable">
       <thead><tr id="revealHeadRow"></tr></thead>
@@ -401,6 +529,24 @@
   </div>
 </div>
 
+<div id="bracketFlash">
+  <div class="flash-brand brand-top">
+    <img id="bracketFlashLogo" src="" alt="Padel Art logo" />
+    <span class="fb-name" id="bracketFlashEventName"></span>
+  </div>
+  <div class="bracket-scroll">
+    <div class="bracket-columns" id="bracketColumns"></div>
+  </div>
+  <div class="bracket-champion" id="bracketChampion"></div>
+  <div class="reveal-controls" id="bracketFlashControls">
+    <button class="btn-clay" onclick="closeBracketFlash()">Close</button>
+  </div>
+  <div class="reveal-zoom flash-zoom" id="bracketFlashZoom" onclick="event.stopPropagation();">
+    <button class="btn-ghost" onclick="adjustBracketZoom(-0.1)">&minus;</button>
+    <button class="btn-ghost" onclick="adjustBracketZoom(0.1)">+</button>
+  </div>
+</div>
+
 <script>
 let state = {
   category: "Queen of the Court",
@@ -410,7 +556,8 @@ let state = {
     {id:1, name:"Team A", scores:[0,0,0,0,0]},
     {id:2, name:"Team B", scores:[0,0,0,0,0]}
   ],
-  matchups: [] // matchups[roundIdx][courtIdx] = {a: teamId|null, b: teamId|null}
+  matchups: [], // matchups[roundIdx][courtIdx] = {a: teamId|null, b: teamId|null}
+  playoffs: { stage: 'quarterfinals', quarterfinals: [], semifinals: [], finals: [] }
 };
 // boards holds every tournament; state always points at the active tournament's data.
 // Kept as one object so the existing Worker/Gist (which just stores one blob) needs no changes.
@@ -419,6 +566,7 @@ let nextId = 3;
 let saveTimer = null;
 let zoom = 1;
 let editRound = 0;   // which round is shown in the matchup editor
+let editPlayoffStage = 'quarterfinals'; // which stage is shown in the playoff editor
 let flashRound = 0;  // which round is shown in the flash overlay
 let flashZoomLevel = 1;
 const WORKER_URL = "https://padel-scoreboard-sync.markmauricefajardo.workers.dev";
@@ -464,11 +612,13 @@ function switchTournament(id){
   state = boards.tournaments[id];
   recalcNextId();
   ensureMatchupsShape();
+  ensurePlayoffsShape();
   editRound = 0;
   render();
   renderTournamentSwitcher();
   fitTitle();
   if(document.getElementById('matchupPanel').style.display !== 'none') renderMatchupPanel();
+  if(document.getElementById('playoffPanel').style.display !== 'none') renderPlayoffPanel();
 }
 
 function newTournament(){
@@ -478,7 +628,8 @@ function newTournament(){
   boards.tournaments[id] = {
     category: name.trim() || 'New Tournament',
     rounds: 5, courts: 3,
-    teams: [], matchups: [], courtNames: []
+    teams: [], matchups: [], courtNames: [],
+    playoffs: { stage: 'quarterfinals', quarterfinals: [], semifinals: [], finals: [] }
   };
   switchTournament(id);
   queueSave();
@@ -524,6 +675,132 @@ function ensureMatchupsShape(){
   if(flashRound >= state.rounds) flashRound = Math.max(0, state.rounds-1);
 }
 
+/* ---- playoff bracket: quarter finals (top 8), semi finals (top 4), finals (top 2) ---- */
+const PLAYOFF_STAGE_SIZE = { quarterfinals: 4, semifinals: 2, finals: 1 }; // number of matches per stage
+const PLAYOFF_STAGE_LABEL = { quarterfinals: 'Quarter Finals', semifinals: 'Semi Finals', finals: 'Finals' };
+
+function emptyPlayoffMatch(){ return {a:'', b:'', scoreA:0, scoreB:0, aSeed:null, bSeed:null}; }
+
+function escHtml(s){
+  return String(s===null||s===undefined?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+// Returns {winner, loser} if a playoff match has two named teams and a clear
+// (non-tied) score; otherwise null (not played / no result yet).
+function decidedWinnerLoser(m){
+  if(!m) return null;
+  const a = (m.a||'').trim(), b = (m.b||'').trim();
+  if(!a || !b) return null;
+  if(m.scoreA === m.scoreB) return null;
+  return m.scoreA > m.scoreB ? {winner:a, loser:b} : {winner:b, loser:a};
+}
+
+function ensurePlayoffsShape(){
+  if(!state.playoffs || typeof state.playoffs !== 'object'){
+    state.playoffs = { stage: 'quarterfinals', quarterfinals: [], semifinals: [], finals: [] };
+  }
+  const p = state.playoffs;
+  if(!PLAYOFF_STAGE_SIZE[p.stage]) p.stage = 'quarterfinals';
+  ['quarterfinals','semifinals','finals'].forEach(stage=>{
+    if(!Array.isArray(p[stage])) p[stage] = [];
+    while(p[stage].length < PLAYOFF_STAGE_SIZE[stage]) p[stage].push(emptyPlayoffMatch());
+    p[stage].length = PLAYOFF_STAGE_SIZE[stage];
+    p[stage].forEach(m=>{
+      if(typeof m.a !== 'string') m.a = '';
+      if(typeof m.b !== 'string') m.b = '';
+      if(typeof m.scoreA !== 'number') m.scoreA = 0;
+      if(typeof m.scoreB !== 'number') m.scoreB = 0;
+      if(typeof m.aSeed !== 'number') m.aSeed = null;
+      if(typeof m.bSeed !== 'number') m.bSeed = null;
+    });
+  });
+  if(!PLAYOFF_STAGE_SIZE[editPlayoffStage]) editPlayoffStage = 'quarterfinals';
+}
+
+function setPlayoffStage(stage){
+  if(!PLAYOFF_STAGE_SIZE[stage]) return;
+  editPlayoffStage = stage;
+  state.playoffs.stage = stage;
+  renderPlayoffPanel();
+  queueSave();
+}
+
+function togglePlayoffPanel(){
+  ensurePlayoffsShape();
+  const panel = document.getElementById('playoffPanel');
+  const on = panel.style.display !== 'block';
+  panel.style.display = on ? 'block' : 'none';
+  if(on){ editPlayoffStage = state.playoffs.stage || 'quarterfinals'; renderPlayoffPanel(); }
+}
+
+// Seeds the current editPlayoffStage from the group-stage standings: top 8 for
+// quarters (1v8, 2v7, 3v6, 4v5), top 4 for semis (1v4, 2v3), top 2 for finals (1v2).
+function autoFillPlayoffs(){
+  ensurePlayoffsShape();
+  const stage = editPlayoffStage;
+  const needed = PLAYOFF_STAGE_SIZE[stage] * 2;
+  const list = ranked();
+  if(list.length < needed){
+    alert(`Not enough teams for ${PLAYOFF_STAGE_LABEL[stage]}: need at least ${needed} teams on the leaderboard, found ${list.length}.`);
+    return;
+  }
+  if(!confirm(`Fill ${PLAYOFF_STAGE_LABEL[stage]} from the top ${needed} teams in the current standings? This will replace any matchups already entered for this stage.`)) return;
+
+  const seeds = list.slice(0, needed).map(t=>t.name);
+  const matches = [];
+  for(let i=0;i<PLAYOFF_STAGE_SIZE[stage];i++){
+    matches.push({ a: seeds[i], b: seeds[needed-1-i], scoreA:0, scoreB:0, aSeed: i+1, bSeed: needed-i });
+  }
+  state.playoffs[stage] = matches;
+  renderPlayoffPanel();
+  queueSave();
+}
+
+function updatePlayoffTeam(idx, side, value){
+  ensurePlayoffsShape();
+  state.playoffs[editPlayoffStage][idx][side] = value;
+  // the seed number came from standings at fill time — once a name is hand-edited it's stale, so clear it
+  state.playoffs[editPlayoffStage][idx][side==='a' ? 'aSeed' : 'bSeed'] = null;
+  queueSave();
+}
+function updatePlayoffScore(idx, side, value){
+  ensurePlayoffsShape();
+  state.playoffs[editPlayoffStage][idx][side] = Math.max(0, parseInt(value)||0);
+  queueSave();
+}
+
+function renderPlayoffPanel(){
+  ensurePlayoffsShape();
+  ['quarterfinals','semifinals','finals'].forEach(stage=>{
+    document.getElementById('stageTab-'+stage).classList.toggle('active', stage===editPlayoffStage);
+  });
+  const neededTop = PLAYOFF_STAGE_SIZE[editPlayoffStage] * 2;
+  document.getElementById('playoffHint').textContent =
+    `${PLAYOFF_STAGE_LABEL[editPlayoffStage]}: ${PLAYOFF_STAGE_SIZE[editPlayoffStage]} match${PLAYOFF_STAGE_SIZE[editPlayoffStage]===1?'':'es'} (top ${neededTop} from standings), or type names in manually.`;
+
+  const wrap = document.getElementById('playoffRows');
+  wrap.innerHTML = '';
+  const esc = (s)=> String(s===null||s===undefined?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  const matches = state.playoffs[editPlayoffStage];
+  matches.forEach((m,i)=>{
+    const row = document.createElement('div');
+    row.className = 'playoffrow';
+    row.innerHTML = `
+      <span class="matchlabel">Match ${i+1}</span>
+      <input type="text" class="matchup-input" placeholder="Team A"
+        value="${esc(m.a)}" onchange="updatePlayoffTeam(${i},'a',this.value)" />
+      <input type="number" min="0" class="matchup-score" value="${m.scoreA}"
+        onchange="updatePlayoffScore(${i},'scoreA',this.value)" />
+      <span class="vs">vs</span>
+      <input type="number" min="0" class="matchup-score" value="${m.scoreB}"
+        onchange="updatePlayoffScore(${i},'scoreB',this.value)" />
+      <input type="text" class="matchup-input" placeholder="Team B"
+        value="${esc(m.b)}" onchange="updatePlayoffTeam(${i},'b',this.value)" />
+    `;
+    wrap.appendChild(row);
+  });
+}
+
 function isConfigured(){
   return WORKER_URL && WORKER_URL.indexOf('PASTE_YOUR') === -1;
 }
@@ -563,7 +840,7 @@ function updateSyncStatus(s){
 async function loadState(){
   if(!isConfigured()){
     updateSyncStatus('unconfigured');
-    ensureMatchupsShape(); render(); renderTournamentSwitcher(); fitTitle();
+    ensureMatchupsShape(); ensurePlayoffsShape(); render(); renderTournamentSwitcher(); fitTitle();
     pollLoop();
     return;
   }
@@ -588,6 +865,7 @@ async function loadState(){
     scheduleSyncRetry();
   }
   ensureMatchupsShape();
+  ensurePlayoffsShape();
   render();
   renderTournamentSwitcher();
   fitTitle();
@@ -639,9 +917,11 @@ function pollLoop(){
         adoptBoards(JSON.parse(value));
         lastSavedSnapshot = value;
         ensureMatchupsShape();
+        ensurePlayoffsShape();
         render();
         renderTournamentSwitcher();
         fitTitle();
+        if(document.getElementById('playoffPanel').style.display !== 'none') renderPlayoffPanel();
       }
       updateSyncStatus('synced');
     }catch(e){ updateSyncStatus('error'); }
@@ -1011,7 +1291,8 @@ function updateName(id, val){
 }
 function resetBoard(){
   if(!confirm("Clear all teams and scores for this tournament?")) return;
-  const fresh = {category: state.category, rounds: 5, courts: state.courts || 3, teams: [], matchups: [], courtNames: []};
+  const fresh = {category: state.category, rounds: 5, courts: state.courts || 3, teams: [], matchups: [], courtNames: [],
+    playoffs: { stage: 'quarterfinals', quarterfinals: [], semifinals: [], finals: [] }};
   boards.tournaments[boards.activeId] = fresh;
   state = fresh;
   recalcNextId();
@@ -1124,6 +1405,27 @@ function startReveal(){
   if(brandLogo && revealLogo) revealLogo.src = brandLogo.src;
   document.getElementById('revealEventName').textContent = state.category;
 
+  const championBanner = document.getElementById('revealChampionBanner');
+  ensurePlayoffsShape();
+  const finalMatch = (state.playoffs.finals || [])[0];
+  const champ = finalMatch ? decidedWinnerLoser(finalMatch) : null;
+  if(champ){
+    championBanner.innerHTML = `
+      <div class="rcb-row champion">
+        <span class="rcb-label">&#127942; Champion</span>
+        <span class="rcb-name">${escHtml(champ.winner)}</span>
+      </div>
+      <div class="rcb-row runnerup">
+        <span class="rcb-label">Runner-Up</span>
+        <span class="rcb-name">${escHtml(champ.loser)}</span>
+      </div>
+    `;
+    championBanner.style.display = '';
+  } else {
+    championBanner.innerHTML = '';
+    championBanner.style.display = 'none';
+  }
+
   const list = ranked();
   // Top 3 always shown; include a 4th only if tied with 3rd place's total.
   const topList = list.slice(0, 3);
@@ -1171,6 +1473,9 @@ document.addEventListener('keydown', (e)=>{
     if(e.key==='ArrowRight' || e.key===' ') flashStep(1);
     if(e.key==='ArrowLeft') flashStep(-1);
     if(e.key==='Escape') closeFlash();
+  }
+  if(document.getElementById('bracketFlash').classList.contains('show')){
+    if(e.key==='Escape') closeBracketFlash();
   }
 });
 
@@ -1253,6 +1558,128 @@ function renderFlash(){
   stage.classList.remove('flash-anim');
   void stage.offsetWidth;
   stage.classList.add('flash-anim');
+}
+
+/* ---- flash playoff bracket (QF -> SF -> Final, visualized as a bracket tree) ---- */
+let bracketZoomLevel = 1;
+let bracketHideTimer = null;
+
+function openBracketFlash(){
+  ensurePlayoffsShape();
+  const brandLogo = document.getElementById('brandLogo');
+  const bLogo = document.getElementById('bracketFlashLogo');
+  if(brandLogo && bLogo) bLogo.src = brandLogo.src;
+  document.getElementById('bracketFlashEventName').textContent = state.category;
+  document.getElementById('bracketFlash').classList.add('show');
+  bracketZoomLevel = 1;
+  document.getElementById('bracketColumns').style.transform = 'scale(1)';
+  renderBracketFlash();
+  showBracketControls();
+}
+function closeBracketFlash(){
+  document.getElementById('bracketFlash').classList.remove('show');
+  clearTimeout(bracketHideTimer);
+}
+function adjustBracketZoom(delta){
+  bracketZoomLevel = Math.min(2, Math.max(0.4, +(bracketZoomLevel + delta).toFixed(2)));
+  document.getElementById('bracketColumns').style.transform = 'scale(' + bracketZoomLevel + ')';
+}
+function showBracketControls(){
+  const controls = document.getElementById('bracketFlashControls');
+  const zoom = document.getElementById('bracketFlashZoom');
+  controls.classList.remove('controls-hidden');
+  zoom.classList.remove('controls-hidden');
+  clearTimeout(bracketHideTimer);
+  bracketHideTimer = setTimeout(()=>{
+    controls.classList.add('controls-hidden');
+    zoom.classList.add('controls-hidden');
+  }, 3000);
+}
+document.getElementById('bracketFlash').addEventListener('click', showBracketControls);
+
+// fraction (0-1) of a column's height at which match index i (of `count`
+// total matches, evenly spaced) sits — the classic bracket-alignment trick:
+// a parent round's matches land exactly on the midpoint between their two
+// feeder matches as long as every round is spread with equal spacing across
+// the same total height.
+function bracketCenterFrac(i, count){ return (2*i + 1) / (2*count); }
+
+function bracketMatchHTML(m){
+  const aName = (m.a||'').trim() || 'TBD';
+  const bName = (m.b||'').trim() || 'TBD';
+  const decided = decidedWinnerLoser(m);
+  const played = decided || (m.scoreA > 0 || m.scoreB > 0);
+  const aWin = decided && decided.winner === aName;
+  const bWin = decided && decided.winner === bName;
+  const seedBadge = (s)=> (typeof s === 'number' && s>0) ? s : '';
+  return `
+    <div class="bracket-match">
+      <div class="bracket-pill${aWin?' bp-win':''}">
+        <span class="bp-seed">${seedBadge(m.aSeed)}</span>
+        <span class="bp-name">${escHtml(aName)}</span>
+        <span class="bp-score">${played ? m.scoreA : ''}</span>
+      </div>
+      <div class="bracket-pill${bWin?' bp-win':''}">
+        <span class="bp-seed">${seedBadge(m.bSeed)}</span>
+        <span class="bp-name">${escHtml(bName)}</span>
+        <span class="bp-score">${played ? m.scoreB : ''}</span>
+      </div>
+    </div>`;
+}
+
+// Connector lines between one round (fromCount matches) and the next
+// (toCount = fromCount/2 matches), positioned with percentages so they stay
+// correct at any column height.
+function bracketConnectorHTML(fromCount, toCount){
+  let html = '';
+  for(let j=0; j<toCount; j++){
+    const topA = bracketCenterFrac(j*2, fromCount) * 100;
+    const topB = bracketCenterFrac(j*2+1, fromCount) * 100;
+    const topMid = bracketCenterFrac(j, toCount) * 100;
+    html += `
+      <div class="conn-h" style="top:${topA}%;left:0;width:50%;"></div>
+      <div class="conn-h" style="top:${topB}%;left:0;width:50%;"></div>
+      <div class="conn-v" style="left:50%;top:${Math.min(topA,topB)}%;height:${Math.abs(topB-topA)}%;"></div>
+      <div class="conn-h" style="top:${topMid}%;left:50%;width:50%;"></div>
+    `;
+  }
+  return html;
+}
+
+function bracketColumnHTML(matches, label, roundClass){
+  const inner = matches.map(bracketMatchHTML).join('');
+  return `
+    <div class="bracket-col-wrap">
+      <div class="bracket-col-title">${escHtml(label)}</div>
+      <div class="bracket-col ${roundClass}">${inner}</div>
+    </div>`;
+}
+
+function renderBracketFlash(){
+  ensurePlayoffsShape();
+  const p = state.playoffs;
+  const wrap = document.getElementById('bracketColumns');
+  const connector = (fromCount, toCount) => `
+    <div class="bracket-connector">
+      <div class="bracket-connector-spacer"></div>
+      <div class="bracket-connector-lines">${bracketConnectorHTML(fromCount, toCount)}</div>
+    </div>`;
+  wrap.innerHTML =
+    bracketColumnHTML(p.quarterfinals, 'Quarter Finals', 'round-quarter') +
+    connector(4,2) +
+    bracketColumnHTML(p.semifinals, 'Semi Finals', 'round-semi') +
+    connector(2,1) +
+    bracketColumnHTML(p.finals, 'Final', 'round-final');
+
+  const champBanner = document.getElementById('bracketChampion');
+  const champ = decidedWinnerLoser(p.finals[0]);
+  champBanner.textContent = champ ? ('🏆 Champion: ' + champ.winner) : '';
+  champBanner.style.display = champ ? '' : 'none';
+
+  const overlay = document.getElementById('bracketFlash');
+  overlay.classList.remove('bracket-anim');
+  void overlay.offsetWidth;
+  overlay.classList.add('bracket-anim');
 }
 
 loadState();
