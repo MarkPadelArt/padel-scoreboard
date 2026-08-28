@@ -749,6 +749,26 @@ function ensureMatchupsShape(){
       });
     });
   });
+  // Keep every matched team's round score in sync with sets-won, derived from
+  // the sets actually on record. This heals boards that logged point totals
+  // under the previous version of set-scoring — their real set data is
+  // untouched, but the leaderboard now reflects sets won instead of points
+  // without needing every court re-opened by hand.
+  state.matchups.forEach((courts, r)=>{
+    (courts||[]).forEach(m=>{
+      if(!Array.isArray(m.sets)) return;
+      const setsA = matchupSideSetsWon(m, 'a');
+      const setsB = matchupSideSetsWon(m, 'b');
+      [{names:[m.a1,m.a2], setsWon:setsA}, {names:[m.b1,m.b2], setsWon:setsB}].forEach(side=>{
+        side.names.forEach(nameRaw=>{
+          const name = (nameRaw||'').trim();
+          if(!name) return;
+          const team = findTeamByName(name);
+          if(team) team.scores[r] = side.setsWon;
+        });
+      });
+    });
+  });
   if(editRound >= state.rounds) editRound = Math.max(0, state.rounds-1);
   if(flashRound >= state.rounds) flashRound = Math.max(0, state.rounds-1);
 }
@@ -1064,14 +1084,27 @@ function updateMatchup(courtIdx, side, value){
 }
 
 // side is 'a' or 'b' — the pair on that side of the court for this round.
-// Both players on the pair receive the same score for this round (Americano-style).
-// The score is the sum of every set entered for that side on this matchup.
+// Both players on the pair receive the same result for this round (Americano-style).
+// The leaderboard's round score is SETS WON (e.g. 11-2, 11-10 = 2 sets to 0 → "2"),
+// not the raw point total — the point total only feeds the +/- column (see teamPointDiff).
+function matchupSidePoints(m, side){
+  return m.sets.reduce((sum,s)=> sum + (parseInt(side==='a' ? s.a : s.b)||0), 0);
+}
+function matchupSideSetsWon(m, side){
+  return m.sets.reduce((count,s)=>{
+    const a = parseInt(s.a)||0, b = parseInt(s.b)||0;
+    if(a===b) return count; // tied set counts for neither side
+    const won = side==='a' ? (a>b) : (b>a);
+    return count + (won ? 1 : 0);
+  }, 0);
+}
+
 function applyMatchupTotals(courtIdx){
   ensureMatchupsShape();
   const m = state.matchups[editRound][courtIdx];
-  const totalA = m.sets.reduce((sum,s)=>sum + (parseInt(s.a)||0), 0);
-  const totalB = m.sets.reduce((sum,s)=>sum + (parseInt(s.b)||0), 0);
-  [{names:[m.a1,m.a2], total: totalA}, {names:[m.b1,m.b2], total: totalB}].forEach(side=>{
+  const setsA = matchupSideSetsWon(m, 'a');
+  const setsB = matchupSideSetsWon(m, 'b');
+  [{names:[m.a1,m.a2], setsWon: setsA}, {names:[m.b1,m.b2], setsWon: setsB}].forEach(side=>{
     side.names.forEach(nameRaw=>{
       const name = (nameRaw||'').trim();
       if(!name) return;
@@ -1080,7 +1113,7 @@ function applyMatchupTotals(courtIdx){
         team = {id: nextId++, name: name, scores: Array(state.rounds).fill(0)};
         state.teams.push(team);
       }
-      team.scores[editRound] = side.total;
+      team.scores[editRound] = side.setsWon;
     });
   });
 }
@@ -1354,8 +1387,10 @@ function renderMatchupPanel(){
     const m = state.matchups[editRound][c] || {a1:'',a2:'',b1:'',b2:'',sets:[{a:0,b:0}]};
     const row = document.createElement('div');
     row.className = 'courtrow';
-    const totalA = m.sets.reduce((sum,s)=>sum + (parseInt(s.a)||0), 0);
-    const totalB = m.sets.reduce((sum,s)=>sum + (parseInt(s.b)||0), 0);
+    const setsA = matchupSideSetsWon(m, 'a');
+    const setsB = matchupSideSetsWon(m, 'b');
+    const pointsA = matchupSidePoints(m, 'a');
+    const pointsB = matchupSidePoints(m, 'b');
     const setsHtml = m.sets.map((s,si)=>`
         <div class="setpill">
           <span class="setnum">S${si+1}</span>
@@ -1376,9 +1411,9 @@ function renderMatchupPanel(){
         <input type="text" class="matchup-input" placeholder="Player 2"
           value="${esc(m.a2)}" onchange="updateMatchup(${c},'a2',this.value)" />
       </div>
-      <span class="matchup-score" style="pointer-events:none;">${totalA}</span>
+      <span class="matchup-score" style="pointer-events:none;" title="Sets won">${setsA}</span>
       <span class="vs">vs</span>
-      <span class="matchup-score" style="pointer-events:none;">${totalB}</span>
+      <span class="matchup-score" style="pointer-events:none;" title="Sets won">${setsB}</span>
       <div class="pairgroup">
         <input type="text" class="matchup-input" placeholder="Player 1"
           value="${esc(m.b1)}" onchange="updateMatchup(${c},'b1',this.value)" />
@@ -1389,7 +1424,7 @@ function renderMatchupPanel(){
         <span class="setslabel">Sets</span>
         ${setsHtml}
         <button type="button" class="set-add" onclick="addSet(${c})">+ Set</button>
-        <span class="setstotal">Total <b>${totalA}</b> &ndash; <b>${totalB}</b></span>
+        <span class="setstotal">Sets won <b>${setsA}</b>&ndash;<b>${setsB}</b> &nbsp;&bull;&nbsp; Points <b>${pointsA}</b>&ndash;<b>${pointsB}</b></span>
       </div>
     `;
     wrap.appendChild(row);
@@ -1430,25 +1465,27 @@ function changeZoom(delta){
   document.getElementById('zoomLabel').textContent = Math.round(zoom*100) + '%';
 }
 
-// Point difference for a team: sum, across every round they were actually
-// scheduled in a matchup, of (their side's score - the opposing side's score).
-// Used as a tiebreaker when two teams are level on total points.
+// Point difference for a team: sum, across every set they've actually played,
+// of (their own points - the opponent's points) — e.g. sets of 11-2 and 11-10
+// contribute +10 total, independent of how many sets were won.
+// This is read directly from each matchup's set scores, not from team.scores
+// (team.scores holds SETS WON, which is what the leaderboard's round/Total
+// columns show — the point differential is only used for the +/- column).
 function teamPointDiff(team){
   ensureMatchupsShape();
   const name = (team.name||'').trim().toLowerCase();
   if(!name) return 0;
   let diff = 0;
-  state.matchups.forEach((courts, r)=>{
+  state.matchups.forEach((courts)=>{
     (courts||[]).forEach(m=>{
       const aNames = [m.a1, m.a2].map(x=>(x||'').trim().toLowerCase());
       const bNames = [m.b1, m.b2].map(x=>(x||'').trim().toLowerCase());
       const onA = aNames.includes(name);
       const onB = bNames.includes(name);
       if(!onA && !onB) return;
-      const scoreA = pairScoreFor(m.a1, m.a2, r);
-      const scoreB = pairScoreFor(m.b1, m.b2, r);
-      if(scoreA===null || scoreB===null) return; // opponent side has no team yet — not played
-      diff += onA ? (scoreA - scoreB) : (scoreB - scoreA);
+      const pointsA = matchupSidePoints(m, 'a');
+      const pointsB = matchupSidePoints(m, 'b');
+      diff += onA ? (pointsA - pointsB) : (pointsB - pointsA);
     });
   });
   return diff;
