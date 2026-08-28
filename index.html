@@ -264,6 +264,48 @@
   .pairgroup{display:flex;flex-direction:column;gap:6px;flex:1;min-width:110px;}
   .pairgroup .matchup-input{width:100%;}
 
+  /* ---- set-by-set score entry ---- */
+  .setsrow{
+    width:100%;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    padding:8px 0 2px 0;margin-left:100px;
+  }
+  .setslabel{
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;
+    color:rgba(245,247,243,0.4);flex-shrink:0;
+  }
+  .setpill{
+    display:flex;align-items:center;gap:4px;background:rgba(140,198,63,0.07);
+    border:1px solid rgba(140,198,63,0.25);border-radius:8px;padding:4px 5px;flex-shrink:0;
+  }
+  .setpill .setnum{
+    font-family:'Space Mono',monospace;font-size:10px;color:rgba(245,247,243,0.35);padding:0 2px;
+  }
+  .set-input{
+    width:38px;flex-shrink:0;text-align:center;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;
+    background:rgba(140,198,63,0.12);color:var(--lime-bright);border:1px solid rgba(140,198,63,0.3);
+    border-radius:5px;padding:5px 2px;
+    -moz-appearance:textfield;
+  }
+  .set-input::-webkit-inner-spin-button, .set-input::-webkit-outer-spin-button{
+    -webkit-appearance:none;margin:0;
+  }
+  .setpill .set-vs{font-family:'Space Mono',monospace;font-size:10px;color:rgba(245,247,243,0.35);}
+  .set-remove{
+    background:none;border:none;color:rgba(245,247,243,0.3);cursor:pointer;font-size:13px;
+    padding:0 2px;line-height:1;
+  }
+  .set-remove:hover{color:var(--bronze);}
+  .set-add{
+    font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.03em;
+    background:rgba(140,198,63,0.1);color:var(--lime-bright);border:1px dashed rgba(140,198,63,0.4);
+    border-radius:7px;padding:5px 10px;cursor:pointer;flex-shrink:0;
+  }
+  .set-add:hover{background:rgba(140,198,63,0.2);}
+  .setstotal{
+    font-family:'Space Mono',monospace;font-size:11px;color:rgba(245,247,243,0.45);flex-shrink:0;margin-left:auto;
+  }
+  .setstotal b{color:var(--lime-bright);font-size:13px;}
+
   /* ---- playoff bracket panel ---- */
   #playoffPanel{
     margin:0 0 22px;padding:16px;border-radius:12px;
@@ -673,7 +715,7 @@ function ensureMatchupsShape(){
   });
   while(state.matchups.length < state.rounds) state.matchups.push([]);
   state.matchups.length = state.rounds;
-  state.matchups.forEach(roundArr=>{
+  state.matchups.forEach((roundArr, r)=>{
     while(roundArr.length < state.courts) roundArr.push({a1:'',a2:'',b1:'',b2:''});
     roundArr.length = state.courts;
     roundArr.forEach(m=>{
@@ -685,6 +727,26 @@ function ensureMatchupsShape(){
       if(typeof m.a2 !== 'string') m.a2 = '';
       if(typeof m.b1 !== 'string') m.b1 = '';
       if(typeof m.b2 !== 'string') m.b2 = '';
+      // set-by-set scores: array of {a,b} — at least one set always present.
+      // Migrating a matchup that predates set-scoring: fold whatever total was
+      // already entered (stored on the teams, not the matchup) into "Set 1"
+      // instead of resetting it to 0, so scores already logged aren't lost.
+      if(!Array.isArray(m.sets) || m.sets.length===0){
+        const lookupTotal = (n1, n2)=>{
+          for(const n of [n1, n2]){
+            const name = (n||'').trim().toLowerCase();
+            if(!name) continue;
+            const team = state.teams.find(t=>t.name.trim().toLowerCase()===name);
+            if(team) return team.scores[r] || 0;
+          }
+          return 0;
+        };
+        m.sets = [{a: lookupTotal(m.a1,m.a2), b: lookupTotal(m.b1,m.b2)}];
+      }
+      m.sets.forEach(s=>{
+        s.a = Math.max(0, parseInt(s.a)||0);
+        s.b = Math.max(0, parseInt(s.b)||0);
+      });
     });
   });
   if(editRound >= state.rounds) editRound = Math.max(0, state.rounds-1);
@@ -995,32 +1057,62 @@ function findTeamByName(name){
 function updateMatchup(courtIdx, side, value){
   ensureMatchupsShape();
   state.matchups[editRound][courtIdx][side] = value;
+  applyMatchupTotals(courtIdx); // make sure the (possibly new) name picks up this court's set scores
   renderMatchupPanel(); // refresh score field to match the (possibly new) name(s)
+  render();
   queueSave();
 }
 
 // side is 'a' or 'b' — the pair on that side of the court for this round.
 // Both players on the pair receive the same score for this round (Americano-style).
-function updateMatchupScore(courtIdx, side, value){
+// The score is the sum of every set entered for that side on this matchup.
+function applyMatchupTotals(courtIdx){
   ensureMatchupsShape();
   const m = state.matchups[editRound][courtIdx];
-  const names = side==='a' ? [m.a1, m.a2] : [m.b1, m.b2];
-  const score = Math.max(0, parseInt(value)||0);
-  let touched = false;
-  names.forEach(nameRaw=>{
-    const name = (nameRaw||'').trim();
-    if(!name) return;
-    let team = findTeamByName(name);
-    if(!team){
-      team = {id: nextId++, name: name, scores: Array(state.rounds).fill(0)};
-      state.teams.push(team);
-    }
-    team.scores[editRound] = score;
-    touched = true;
+  const totalA = m.sets.reduce((sum,s)=>sum + (parseInt(s.a)||0), 0);
+  const totalB = m.sets.reduce((sum,s)=>sum + (parseInt(s.b)||0), 0);
+  [{names:[m.a1,m.a2], total: totalA}, {names:[m.b1,m.b2], total: totalB}].forEach(side=>{
+    side.names.forEach(nameRaw=>{
+      const name = (nameRaw||'').trim();
+      if(!name) return;
+      let team = findTeamByName(name);
+      if(!team){
+        team = {id: nextId++, name: name, scores: Array(state.rounds).fill(0)};
+        state.teams.push(team);
+      }
+      team.scores[editRound] = side.total;
+    });
   });
-  if(!touched) return;
+}
+
+function updateSetScore(courtIdx, setIdx, side, value){
+  ensureMatchupsShape();
+  const m = state.matchups[editRound][courtIdx];
+  m.sets[setIdx][side] = Math.max(0, parseInt(value)||0);
+  applyMatchupTotals(courtIdx);
+  renderMatchupPanel();
   render();
   if(document.getElementById('flash').classList.contains('show')) renderFlash();
+  queueSave();
+}
+
+function addSet(courtIdx){
+  ensureMatchupsShape();
+  state.matchups[editRound][courtIdx].sets.push({a:0, b:0});
+  applyMatchupTotals(courtIdx);
+  renderMatchupPanel();
+  render();
+  queueSave();
+}
+
+function removeSet(courtIdx, setIdx){
+  ensureMatchupsShape();
+  const m = state.matchups[editRound][courtIdx];
+  if(m.sets.length <= 1) return; // always keep at least one set box
+  m.sets.splice(setIdx, 1);
+  applyMatchupTotals(courtIdx);
+  renderMatchupPanel();
+  render();
   queueSave();
 }
 
@@ -1204,6 +1296,7 @@ function autoGenerateMatchups(){
       state.matchups[r][c] = courts[c] || {a1:'',a2:'',b1:'',b2:''};
     }
   }
+  ensureMatchupsShape(); // fill in the sets[] array on the freshly generated matchups
 
   render();
   renderMatchupPanel();
@@ -1258,11 +1351,22 @@ function renderMatchupPanel(){
   wrap.innerHTML = '';
   const esc = (s)=> String(s===null||s===undefined?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   for(let c=0;c<state.courts;c++){
-    const m = state.matchups[editRound][c] || {a1:'',a2:'',b1:'',b2:''};
+    const m = state.matchups[editRound][c] || {a1:'',a2:'',b1:'',b2:'',sets:[{a:0,b:0}]};
     const row = document.createElement('div');
     row.className = 'courtrow';
-    const scoreA = scoreForSide(m,'a');
-    const scoreB = scoreForSide(m,'b');
+    const totalA = m.sets.reduce((sum,s)=>sum + (parseInt(s.a)||0), 0);
+    const totalB = m.sets.reduce((sum,s)=>sum + (parseInt(s.b)||0), 0);
+    const setsHtml = m.sets.map((s,si)=>`
+        <div class="setpill">
+          <span class="setnum">S${si+1}</span>
+          <input type="number" min="0" class="set-input" value="${s.a}"
+            onchange="updateSetScore(${c},${si},'a',this.value)" />
+          <span class="set-vs">&ndash;</span>
+          <input type="number" min="0" class="set-input" value="${s.b}"
+            onchange="updateSetScore(${c},${si},'b',this.value)" />
+          ${m.sets.length > 1 ? `<button type="button" class="set-remove" onclick="removeSet(${c},${si})">&times;</button>` : ''}
+        </div>
+      `).join('');
     row.innerHTML = `
       <input type="text" class="courtlabel" value="${esc(state.courtNames[c])}"
         onchange="updateCourtName(${c},this.value)" />
@@ -1272,16 +1376,20 @@ function renderMatchupPanel(){
         <input type="text" class="matchup-input" placeholder="Player 2"
           value="${esc(m.a2)}" onchange="updateMatchup(${c},'a2',this.value)" />
       </div>
-      <input type="number" min="0" class="matchup-score" value="${scoreA}"
-        onchange="updateMatchupScore(${c},'a',this.value)" />
+      <span class="matchup-score" style="pointer-events:none;">${totalA}</span>
       <span class="vs">vs</span>
-      <input type="number" min="0" class="matchup-score" value="${scoreB}"
-        onchange="updateMatchupScore(${c},'b',this.value)" />
+      <span class="matchup-score" style="pointer-events:none;">${totalB}</span>
       <div class="pairgroup">
         <input type="text" class="matchup-input" placeholder="Player 1"
           value="${esc(m.b1)}" onchange="updateMatchup(${c},'b1',this.value)" />
         <input type="text" class="matchup-input" placeholder="Player 2"
           value="${esc(m.b2)}" onchange="updateMatchup(${c},'b2',this.value)" />
+      </div>
+      <div class="setsrow">
+        <span class="setslabel">Sets</span>
+        ${setsHtml}
+        <button type="button" class="set-add" onclick="addSet(${c})">+ Set</button>
+        <span class="setstotal">Total <b>${totalA}</b> &ndash; <b>${totalB}</b></span>
       </div>
     `;
     wrap.appendChild(row);
