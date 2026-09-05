@@ -335,6 +335,100 @@
   }
   .playoffrow .vs{font-family:'Space Mono',monospace;font-size:12px;color:rgba(245,247,243,0.4);flex-shrink:0;}
 
+  /* ---- new event modal ---- */
+  #eventModalOverlay{
+    position:fixed;inset:0;background:rgba(2,4,3,0.82);z-index:60;
+    display:none;align-items:center;justify-content:center;padding:20px;
+  }
+  #eventModalOverlay.show{display:flex;}
+  .eventmodal{
+    width:100%;max-width:480px;background:var(--bg2);border:1px solid rgba(140,198,63,0.3);
+    border-radius:14px;padding:26px;
+  }
+  .eventmodal h2{
+    font-family:'Archivo Black',sans-serif;font-size:22px;margin:0 0 6px;color:var(--white);
+  }
+  .eventmodal p{
+    font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(245,247,243,0.5);margin:0 0 18px;
+  }
+  .eventtype-opt{
+    display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;
+    text-align:left;background:rgba(140,198,63,0.06);border:1px solid rgba(140,198,63,0.25);
+    border-radius:10px;padding:14px 16px;margin-bottom:10px;cursor:pointer;
+  }
+  .eventtype-opt:hover{background:rgba(140,198,63,0.15);}
+  .eventtype-opt b{font-family:'DM Sans',sans-serif;font-size:15px;color:var(--lime-bright);}
+  .eventtype-opt span{font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(245,247,243,0.55);}
+  .eventmodal .modal-cancel{margin-top:6px;}
+
+  /* ---- groups panel (tournament) ---- */
+  #groupsPanel{
+    margin:0 0 22px;padding:16px;border-radius:12px;
+    background:rgba(140,198,63,0.05);border:1px solid rgba(140,198,63,0.15);
+  }
+  .groupblock{
+    border:1px solid rgba(140,198,63,0.18);border-radius:10px;padding:12px 14px;margin-bottom:14px;
+    background:rgba(140,198,63,0.03);
+  }
+  .groupblock-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+  .groupname-input{
+    font-family:'Archivo Black',sans-serif;font-size:17px;color:var(--white);background:transparent;
+    border:none;border-bottom:2px solid transparent;flex:1;min-width:120px;padding:2px 0;
+  }
+  .groupname-input:focus{outline:none;border-bottom:2px solid var(--lime-bright);}
+  .groupteams{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+  .groupteam-chip{
+    display:flex;align-items:center;gap:6px;background:rgba(140,198,63,0.1);
+    border:1px solid rgba(140,198,63,0.3);border-radius:20px;padding:6px 6px 6px 12px;
+    font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--white);
+  }
+  .groupteam-chip button{
+    background:none;border:none;color:rgba(245,247,243,0.4);cursor:pointer;font-size:14px;padding:0 4px;
+  }
+  .groupteam-chip button:hover{color:var(--bronze);}
+  .groupaddrow{display:flex;gap:8px;margin-bottom:10px;}
+  .groupaddrow input{
+    flex:1;font-family:'DM Sans',sans-serif;font-size:13px;background:rgba(245,247,243,0.06);
+    color:var(--white);border:1px solid rgba(140,198,63,0.25);border-radius:6px;padding:8px 10px;
+  }
+  .groupmatchrow{
+    display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid rgba(140,198,63,0.1);flex-wrap:wrap;
+  }
+  .groupmatch-name{
+    font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;color:var(--white);min-width:110px;
+  }
+  .groupstandings{width:100%;border-collapse:collapse;margin-top:8px;}
+  .groupstandings th{
+    font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+    color:rgba(245,247,243,0.45);text-align:center;padding:6px 4px;border-bottom:1px solid rgba(140,198,63,0.15);
+  }
+  .groupstandings th:first-child, .groupstandings th:nth-child(2){text-align:left;}
+  .groupstandings td{
+    font-family:'DM Sans',sans-serif;font-size:13px;text-align:center;padding:6px 4px;
+    border-bottom:1px solid rgba(140,198,63,0.06);color:var(--white);
+  }
+  .groupstandings td:first-child{width:30px;font-family:'Space Mono',monospace;color:rgba(245,247,243,0.5);}
+  .groupstandings td:nth-child(2){text-align:left;font-weight:700;}
+  .groupstandings tr.qualified{background:rgba(140,198,63,0.1);}
+  .qualified-badge{
+    font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--ink);background:var(--lime-bright);border-radius:4px;padding:2px 5px;margin-left:6px;
+  }
+  .formatctrl{
+    display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:12px;
+    color:var(--white);margin-bottom:12px;
+  }
+  .formatctrl select{
+    background:var(--bg2);color:var(--white);border:1px solid rgba(240,180,41,0.35);border-radius:8px;
+    padding:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;
+  }
+  .freescore-input{
+    width:78px;flex-shrink:0;text-align:center;font-family:'Space Mono',monospace;font-size:16px;font-weight:700;
+    background:rgba(140,198,63,0.12);color:var(--lime-bright);border:1px solid rgba(140,198,63,0.3);
+    border-radius:6px;padding:8px 4px;
+  }
+  .freescore-input::placeholder{color:rgba(140,198,63,0.35);}
+
   /* ---- flash matchups overlay ---- */
   #flash{
     position:fixed;inset:0;background:#000;
@@ -436,7 +530,7 @@
   .bracket-pill.bp-win{border-color:rgba(240,180,41,0.7);background:rgba(240,180,41,0.12);}
   .bracket-pill.bp-win .bp-seed{background:rgba(240,180,41,0.22);color:var(--gold);}
   .bracket-pill.bp-win .bp-name, .bracket-pill.bp-win .bp-score{color:var(--gold);}
-  .round-final .bracket-pill{border-color:rgba(240,180,41,0.4);}
+  .round-finals .bracket-pill{border-color:rgba(240,180,41,0.4);}
 
   .bracket-champion{
     margin-top:clamp(8px,1.8vh,20px);opacity:0;flex-shrink:0;
@@ -463,7 +557,7 @@
       </div>
     </div>
     <div class="headctrls">
-      <div class="roundctrl editctrls">
+      <div class="roundctrl editctrls" id="roundsCtrlWrap">
         <span>Rounds</span>
         <button class="btn-ghost" onclick="changeRounds(-1)">&minus;</button>
         <span id="roundCount">5</span>
@@ -478,14 +572,15 @@
       <div class="roundctrl editctrls">
         <select id="tournamentSelect" onchange="switchTournament(this.value)"
           style="background:var(--bg2);color:var(--white);border:1px solid rgba(140,198,63,0.3);border-radius:8px;padding:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;"></select>
-        <button class="btn-ghost" onclick="newTournament()">+ Tournament</button>
+        <button class="btn-ghost" onclick="openEventModal()">+ Event</button>
         <button class="btn-ghost" onclick="deleteTournament()">Delete</button>
       </div>
-      <button class="btn-ghost editctrls" onclick="addTeam()">+ Team</button>
-      <button class="btn-ghost editctrls" onclick="toggleMatchupPanel()">Matchups</button>
+      <button class="btn-ghost editctrls" id="addTeamBtn" onclick="addTeam()">+ Team</button>
+      <button class="btn-ghost editctrls" id="matchupsBtn" onclick="toggleMatchupPanel()">Matchups</button>
+      <button class="btn-ghost editctrls" id="groupsBtn" onclick="toggleGroupsPanel()" style="display:none;">Groups</button>
       <button class="btn-ghost editctrls" onclick="togglePlayoffPanel()">🏆 Playoffs</button>
       <button class="btn-ghost hide-on-tv-idle" id="tvBtn" onclick="toggleTV()">TV Mode</button>
-      <button class="btn-clay hide-on-tv-idle" onclick="openFlash()">Flash Matchups</button>
+      <button class="btn-clay hide-on-tv-idle" id="flashMatchupsBtn" onclick="openFlash()">Flash Matchups</button>
       <button class="btn-clay hide-on-tv-idle" onclick="openBracketFlash()">Flash Playoff Bracket</button>
       <button class="btn-lime hide-on-tv-idle" onclick="startReveal()">Start Reveal</button>
     </div>
@@ -512,16 +607,33 @@
   </div>
 
   <div id="playoffPanel" class="editctrls" style="display:none;">
-    <div class="stagetabs">
-      <button class="stagetab" id="stageTab-quarterfinals" onclick="setPlayoffStage('quarterfinals')">Quarter Finals</button>
-      <button class="stagetab" id="stageTab-semifinals" onclick="setPlayoffStage('semifinals')">Semi Finals</button>
-      <button class="stagetab" id="stageTab-finals" onclick="setPlayoffStage('finals')">Finals</button>
+    <div class="formatctrl" id="playoffFormatCtrl" style="display:none;">
+      <span>Playoffs start at</span>
+      <select id="playoffFormatSelect" onchange="setPlayoffFormat(this.value)">
+        <option value="r16">Round of 16 (16 teams)</option>
+        <option value="qf">Quarter Finals (8 teams)</option>
+        <option value="sf">Semi Finals (4 teams)</option>
+        <option value="f">Final (2 teams)</option>
+      </select>
     </div>
+    <div class="stagetabs" id="stageTabs"></div>
     <div class="matchup-head">
-      <button class="btn-lime" onclick="autoFillPlayoffs()" title="Fills this stage from the current group-stage standings (top 8 for quarters, top 4 for semis, top 2 for finals). You can still edit any name afterward.">&#8635; Auto-Fill from Standings</button>
+      <button class="btn-lime" id="playoffAutoBtn" onclick="handlePlayoffAutoFill()">&#8635; Auto-Fill from Standings</button>
       <span class="hint" id="playoffHint"></span>
     </div>
     <div id="playoffRows"></div>
+  </div>
+
+  <div id="groupsPanel" class="editctrls" style="display:none;">
+    <div class="matchup-head">
+      <div class="roundctrl">
+        <span>Groups</span>
+        <button class="btn-ghost" onclick="changeGroupCount(-1)">&minus;</button>
+        <span id="groupCount">4</span>
+        <button class="btn-ghost" onclick="changeGroupCount(1)">+</button>
+      </div>
+    </div>
+    <div id="groupBlocks"></div>
   </div>
 
   <div id="tvStage">
@@ -542,6 +654,26 @@
   <div class="footer-actions">
     <span class="hint editctrls">Tap a score to edit &middot; scores save automatically &middot; use +/&minus; to zoom the board to fit more teams</span>
     <button class="btn-ghost editctrls" onclick="resetBoard()">Reset board</button>
+  </div>
+</div>
+
+<div id="eventModalOverlay">
+  <div class="eventmodal">
+    <h2>New Event</h2>
+    <p>What kind of event do you want to set up?</p>
+    <button type="button" class="eventtype-opt" onclick="chooseEventType('tournament')">
+      <b>1. Tournament</b>
+      <span>Groups, round-robin sets (3pts win / 1pt loss), auto playoffs</span>
+    </button>
+    <button type="button" class="eventtype-opt" onclick="chooseEventType('mixmatch')">
+      <b>2. Mix &amp; Match</b>
+      <span>Rotating partners each round, quick freeform scores like 11-4</span>
+    </button>
+    <button type="button" class="eventtype-opt" onclick="chooseEventType('social')">
+      <b>3. Social Event</b>
+      <span>Simple leaderboard, enter a score per round</span>
+    </button>
+    <button type="button" class="btn-ghost modal-cancel" onclick="closeEventModal()">Cancel</button>
   </div>
 </div>
 
@@ -607,6 +739,7 @@
 
 <script>
 let state = {
+  eventType: 'social', // 'tournament' | 'mixmatch' | 'social'
   category: "Queen of the Court",
   rounds: 5,
   courts: 3,
@@ -615,7 +748,10 @@ let state = {
     {id:2, name:"Team B", scores:[0,0,0,0,0]}
   ],
   matchups: [], // matchups[roundIdx][courtIdx] = {a: teamId|null, b: teamId|null}
-  playoffs: { stage: 'quarterfinals', quarterfinals: [], semifinals: [], finals: [] }
+  playoffs: { stage: 'quarterfinals', playoffFormat:'qf', round16: [], quarterfinals: [], semifinals: [], finals: [] },
+  playoffFormat: 'qf', // 'r16' | 'qf' | 'sf' | 'f' — which stage the bracket starts at (tournament mode)
+  groups: [],        // tournament mode: [{id, name, teamIds:[]}]
+  groupMatches: {}   // tournament mode: { [groupId]: [{id, aId, bId, sets:[{a,b}]}] }
 };
 // boards holds every tournament; state always points at the active tournament's data.
 // Kept as one object so the existing Worker/Gist (which just stores one blob) needs no changes.
@@ -671,24 +807,57 @@ function switchTournament(id){
   recalcNextId();
   ensureMatchupsShape();
   ensurePlayoffsShape();
+  ensureGroupsShape();
   editRound = 0;
   render();
   renderTournamentSwitcher();
   fitTitle();
   if(document.getElementById('matchupPanel').style.display !== 'none') renderMatchupPanel();
   if(document.getElementById('playoffPanel').style.display !== 'none') renderPlayoffPanel();
+  if(document.getElementById('groupsPanel').style.display !== 'none') renderGroupsPanel();
 }
 
-function newTournament(){
-  const name = prompt('Name for the new tournament:', 'New Tournament');
+function openEventModal(){
+  document.getElementById('eventModalOverlay').classList.add('show');
+}
+function closeEventModal(){
+  document.getElementById('eventModalOverlay').classList.remove('show');
+}
+
+function emptyPlayoffsShape(){
+  return { stage:'quarterfinals', playoffFormat:'qf', round16:[], quarterfinals:[], semifinals:[], finals:[] };
+}
+
+// Shared entry point for the "+ Event" button: user picks Tournament / Mix & Match /
+// Social Event, then a couple of quick prompts (name, and for tournaments, group
+// count + playoff size) finish setting up the board.
+function chooseEventType(type){
+  closeEventModal();
+  const name = prompt('Name for the new event:', type==='tournament' ? 'New Tournament' : (type==='mixmatch' ? 'Mix & Match' : 'New Social Event'));
   if(name === null) return;
   const id = 't' + Date.now();
-  boards.tournaments[id] = {
-    category: name.trim() || 'New Tournament',
+  const base = {
+    eventType: type,
+    category: name.trim() || 'New Event',
     rounds: 5, courts: 3,
     teams: [], matchups: [], courtNames: [],
-    playoffs: { stage: 'quarterfinals', quarterfinals: [], semifinals: [], finals: [] }
+    playoffs: emptyPlayoffsShape(),
+    playoffFormat: 'qf',
+    groups: [], groupMatches: {}
   };
+  if(type === 'tournament'){
+    let numGroups = parseInt(prompt('How many groups?', '4')) || 4;
+    numGroups = Math.max(1, Math.min(16, numGroups));
+    base.groups = [];
+    for(let i=0;i<numGroups;i++){
+      base.groups.push({ id: 'g'+i, name: 'Group ' + String.fromCharCode(65+i), teamIds: [] });
+    }
+    const fmt = prompt('Playoff size once groups finish — type 16, 8, 4, or 2:', '8');
+    const fmtMap = {'16':'r16','8':'qf','4':'sf','2':'f'};
+    base.playoffFormat = fmtMap[(fmt||'').trim()] || 'qf';
+    base.playoffs.playoffFormat = base.playoffFormat;
+  }
+  boards.tournaments[id] = base;
   switchTournament(id);
   queueSave();
 }
@@ -705,6 +874,7 @@ function deleteTournament(){
 }
 
 function ensureMatchupsShape(){
+  if(!state.eventType) state.eventType = 'social'; // migrate older single-mode boards
   if(!state.courts) state.courts = 3;
   if(!state.matchups) state.matchups = [];
   if(!state.courtNames) state.courtNames = [];
@@ -773,9 +943,19 @@ function ensureMatchupsShape(){
   if(flashRound >= state.rounds) flashRound = Math.max(0, state.rounds-1);
 }
 
-/* ---- playoff bracket: quarter finals (top 8), semi finals (top 4), finals (top 2) ---- */
-const PLAYOFF_STAGE_SIZE = { quarterfinals: 4, semifinals: 2, finals: 1 }; // number of matches per stage
-const PLAYOFF_STAGE_LABEL = { quarterfinals: 'Quarter Finals', semifinals: 'Semi Finals', finals: 'Finals' };
+/* ---- playoff bracket: round of 16 (top 16), quarter finals (top 8), semi finals (top 4), finals (top 2) ---- */
+const PLAYOFF_STAGE_SIZE = { round16: 8, quarterfinals: 4, semifinals: 2, finals: 1 }; // number of matches per stage
+const PLAYOFF_STAGE_LABEL = { round16: 'Round of 16', quarterfinals: 'Quarter Finals', semifinals: 'Semi Finals', finals: 'Finals' };
+const PLAYOFF_STAGE_ORDER = ['round16','quarterfinals','semifinals','finals'];
+const PLAYOFF_FORMAT_START = { r16:'round16', qf:'quarterfinals', sf:'semifinals', f:'finals' };
+
+// The sequence of stages actually in play, based on the chosen starting bracket
+// size (16/8/4/2 teams) — e.g. format 'qf' -> ['quarterfinals','semifinals','finals'].
+function activeStages(){
+  const start = PLAYOFF_FORMAT_START[state.playoffFormat] || 'quarterfinals';
+  const idx = PLAYOFF_STAGE_ORDER.indexOf(start);
+  return PLAYOFF_STAGE_ORDER.slice(idx < 0 ? 1 : idx);
+}
 
 function emptyPlayoffMatch(){ return {a:'', b:'', scoreA:0, scoreB:0, aSeed:null, bSeed:null}; }
 
@@ -794,12 +974,13 @@ function decidedWinnerLoser(m){
 }
 
 function ensurePlayoffsShape(){
+  if(!state.playoffFormat) state.playoffFormat = 'qf';
   if(!state.playoffs || typeof state.playoffs !== 'object'){
-    state.playoffs = { stage: 'quarterfinals', quarterfinals: [], semifinals: [], finals: [] };
+    state.playoffs = { stage: 'quarterfinals', round16: [], quarterfinals: [], semifinals: [], finals: [] };
   }
   const p = state.playoffs;
-  if(!PLAYOFF_STAGE_SIZE[p.stage]) p.stage = 'quarterfinals';
-  ['quarterfinals','semifinals','finals'].forEach(stage=>{
+  if(!PLAYOFF_STAGE_SIZE[p.stage]) p.stage = activeStages()[0] || 'quarterfinals';
+  PLAYOFF_STAGE_ORDER.forEach(stage=>{
     if(!Array.isArray(p[stage])) p[stage] = [];
     while(p[stage].length < PLAYOFF_STAGE_SIZE[stage]) p[stage].push(emptyPlayoffMatch());
     p[stage].length = PLAYOFF_STAGE_SIZE[stage];
@@ -812,7 +993,7 @@ function ensurePlayoffsShape(){
       if(typeof m.bSeed !== 'number') m.bSeed = null;
     });
   });
-  if(!PLAYOFF_STAGE_SIZE[editPlayoffStage]) editPlayoffStage = 'quarterfinals';
+  if(!activeStages().includes(editPlayoffStage)) editPlayoffStage = activeStages()[0] || 'quarterfinals';
 }
 
 function setPlayoffStage(stage){
@@ -823,16 +1004,40 @@ function setPlayoffStage(stage){
   queueSave();
 }
 
+function setPlayoffFormat(value){
+  if(!PLAYOFF_FORMAT_START[value]) return;
+  state.playoffFormat = value;
+  state.playoffs.playoffFormat = value;
+  editPlayoffStage = activeStages()[0];
+  state.playoffs.stage = editPlayoffStage;
+  renderPlayoffPanel();
+  queueSave();
+}
+
 function togglePlayoffPanel(){
   ensurePlayoffsShape();
   const panel = document.getElementById('playoffPanel');
   const on = panel.style.display !== 'block';
   panel.style.display = on ? 'block' : 'none';
-  if(on){ editPlayoffStage = state.playoffs.stage || 'quarterfinals'; renderPlayoffPanel(); }
+  if(on){
+    editPlayoffStage = activeStages().includes(state.playoffs.stage) ? state.playoffs.stage : activeStages()[0];
+    renderPlayoffPanel();
+  }
 }
 
-// Seeds the current editPlayoffStage from the group-stage standings: top 8 for
-// quarters (1v8, 2v7, 3v6, 4v5), top 4 for semis (1v4, 2v3), top 2 for finals (1v2).
+// Dispatches to the right auto-fill behavior for the current event type.
+function handlePlayoffAutoFill(){
+  if(state.eventType === 'tournament' && activeStages()[0] === editPlayoffStage){
+    autoFillPlayoffsFromGroups();
+  } else if(state.eventType === 'tournament'){
+    advanceWinnersToStage(editPlayoffStage);
+  } else {
+    autoFillPlayoffs();
+  }
+}
+
+// Seeds the current editPlayoffStage from the flat leaderboard standings
+// (used for mix & match / social events): 1v-last, 2v-second-last, etc.
 function autoFillPlayoffs(){
   ensurePlayoffsShape();
   const stage = editPlayoffStage;
@@ -854,6 +1059,113 @@ function autoFillPlayoffs(){
   queueSave();
 }
 
+// Seeds the FIRST active playoff stage from group standings (tournament mode):
+// teams advance from each group per tournamentQualifiers(), then seed 1v-last etc.
+// Cross-group pairing (used when the groups split evenly): groups are paired
+// mirror-style — first with last, second with second-last, etc. (A&D, B&C for
+// 4 groups) — and each pair produces two matches crossing top vs 2nd:
+// groupX-1st vs groupY-2nd, and groupY-1st vs groupX-2nd. If only one team
+// advances per group, it's simply groupX-1st vs groupY-1st.
+function crossGroupPlayoffMatches(groups, perGroup){
+  const half = groups.length / 2;
+  const matches = [];
+  for(let i=0;i<half;i++){
+    const gx = groups[i], gy = groups[groups.length-1-i];
+    const sx = groupStandings(gx.id), sy = groupStandings(gy.id);
+    if(perGroup === 1){
+      matches.push({ a: sx[0].name, b: sy[0].name, scoreA:0, scoreB:0, aSeed:null, bSeed:null });
+    } else {
+      matches.push({ a: sx[0].name, b: sy[1].name, scoreA:0, scoreB:0, aSeed:null, bSeed:null });
+      matches.push({ a: sy[0].name, b: sx[1].name, scoreA:0, scoreB:0, aSeed:null, bSeed:null });
+    }
+  }
+  return matches;
+}
+
+// Seeds the FIRST active playoff stage from group standings (tournament mode).
+// When the groups split evenly (even group count, exactly 1 or 2 qualifiers
+// per group, no leftover wildcard slots needed), matches are cross-paired
+// group-vs-group (see crossGroupPlayoffMatches). Otherwise falls back to
+// standard 1-vs-last seeding across all qualifiers. Either way, if there
+// simply aren't enough real teams to fill the bracket, the highest remaining
+// seeds (by points, then set +/-) get a BYE — an automatic win into the next
+// round — rather than leaving a slot empty.
+function autoFillPlayoffsFromGroups(){
+  ensurePlayoffsShape();
+  ensureGroupsShape();
+  const stage = activeStages()[0];
+  const needed = PLAYOFF_STAGE_SIZE[stage] * 2;
+  const groups = state.groups;
+  if(groups.length === 0){ alert('Add at least one group first.'); return; }
+
+  const perGroup = Math.floor(needed / groups.length);
+  const remainder = needed - perGroup*groups.length;
+  const totalTeams = groups.reduce((sum,g)=> sum + g.teamIds.length, 0);
+  const clean = remainder === 0 && groups.length % 2 === 0 && (perGroup === 1 || perGroup === 2)
+    && groups.every(g => groupStandings(g.id).length >= perGroup);
+
+  let matches;
+  let confirmMsg;
+  if(clean){
+    matches = crossGroupPlayoffMatches(groups, perGroup);
+    confirmMsg = `Fill ${PLAYOFF_STAGE_LABEL[stage]} by crossing group standings (e.g. Group A's 1st vs the mirrored group's 2nd)? This will replace any matchups already entered for this stage.`;
+  } else {
+    const qualifiers = tournamentQualifiers();
+    const numByes = Math.max(0, needed - qualifiers.length);
+    if(qualifiers.length === 0){ alert('No group standings to seed from yet — enter some set scores first.'); return; }
+    confirmMsg = numByes > 0
+      ? `Only ${qualifiers.length} team(s) are available for a ${needed}-team bracket — the top ${numByes} seed(s) will get a BYE (automatic win) this round. Continue?`
+      : `Fill ${PLAYOFF_STAGE_LABEL[stage]} with the top ${needed} qualifying teams from the groups (1v${needed}, 2v${needed-1}, ...)? This will replace any matchups already entered for this stage.`;
+    if(!confirm(confirmMsg)) return;
+    const seeds = qualifiers.map(t=>t.name);
+    matches = [];
+    for(let i=0;i<PLAYOFF_STAGE_SIZE[stage];i++){
+      const topIdx = i, bottomIdx = needed-1-i;
+      const aName = seeds[topIdx] || '';
+      const isBye = bottomIdx >= seeds.length;
+      const bName = isBye ? 'BYE' : seeds[bottomIdx];
+      matches.push(isBye
+        ? { a: aName, b: 'BYE', scoreA: 1, scoreB: 0, aSeed: topIdx+1, bSeed: null }
+        : { a: aName, b: bName, scoreA: 0, scoreB: 0, aSeed: topIdx+1, bSeed: bottomIdx+1 });
+    }
+    state.playoffs[stage] = matches;
+    editPlayoffStage = stage;
+    renderPlayoffPanel();
+    queueSave();
+    return;
+  }
+  if(!confirm(confirmMsg)) return;
+  state.playoffs[stage] = matches;
+  editPlayoffStage = stage;
+  renderPlayoffPanel();
+  queueSave();
+}
+
+
+// Advances the decided winners of the previous active stage into `stage`
+// (adjacent match pairs meet, matching the bracket tree already drawn).
+function advanceWinnersToStage(stage){
+  ensurePlayoffsShape();
+  const stages = activeStages();
+  const idx = stages.indexOf(stage);
+  if(idx <= 0){ autoFillPlayoffsFromGroups(); return; }
+  const prevStage = stages[idx-1];
+  const prevMatches = state.playoffs[prevStage];
+  const results = prevMatches.map(decidedWinnerLoser);
+  if(results.some(r=>!r)){
+    alert(`Every match in ${PLAYOFF_STAGE_LABEL[prevStage]} needs a decisive score before advancing winners.`);
+    return;
+  }
+  if(!confirm(`Advance winners from ${PLAYOFF_STAGE_LABEL[prevStage]} into ${PLAYOFF_STAGE_LABEL[stage]}? This replaces current entries for this stage.`)) return;
+  const matches = [];
+  for(let i=0;i<PLAYOFF_STAGE_SIZE[stage];i++){
+    matches.push({ a: results[2*i].winner, b: results[2*i+1].winner, scoreA:0, scoreB:0, aSeed:null, bSeed:null });
+  }
+  state.playoffs[stage] = matches;
+  renderPlayoffPanel();
+  queueSave();
+}
+
 function updatePlayoffTeam(idx, side, value){
   ensurePlayoffsShape();
   state.playoffs[editPlayoffStage][idx][side] = value;
@@ -869,12 +1181,29 @@ function updatePlayoffScore(idx, side, value){
 
 function renderPlayoffPanel(){
   ensurePlayoffsShape();
-  ['quarterfinals','semifinals','finals'].forEach(stage=>{
-    document.getElementById('stageTab-'+stage).classList.toggle('active', stage===editPlayoffStage);
-  });
+  const isTournament = state.eventType === 'tournament';
+  document.getElementById('playoffFormatCtrl').style.display = isTournament ? 'flex' : 'none';
+  if(isTournament) document.getElementById('playoffFormatSelect').value = state.playoffFormat;
+
+  const stages = activeStages();
+  const tabsWrap = document.getElementById('stageTabs');
+  tabsWrap.innerHTML = stages.map(stage=>
+    `<button class="stagetab${stage===editPlayoffStage?' active':''}" onclick="setPlayoffStage('${stage}')">${PLAYOFF_STAGE_LABEL[stage]}</button>`
+  ).join('');
+
   const neededTop = PLAYOFF_STAGE_SIZE[editPlayoffStage] * 2;
-  document.getElementById('playoffHint').textContent =
-    `${PLAYOFF_STAGE_LABEL[editPlayoffStage]}: ${PLAYOFF_STAGE_SIZE[editPlayoffStage]} match${PLAYOFF_STAGE_SIZE[editPlayoffStage]===1?'':'es'} (top ${neededTop} from standings), or type names in manually.`;
+  const isFirstStage = stages[0] === editPlayoffStage;
+  const autoBtn = document.getElementById('playoffAutoBtn');
+  if(isTournament){
+    autoBtn.textContent = isFirstStage ? '⟲ Auto-Fill from Groups' : '⟲ Advance Winners from Previous Round';
+    document.getElementById('playoffHint').textContent = isFirstStage
+      ? `${PLAYOFF_STAGE_LABEL[editPlayoffStage]}: ${PLAYOFF_STAGE_SIZE[editPlayoffStage]} match${PLAYOFF_STAGE_SIZE[editPlayoffStage]===1?'':'es'} (top ${neededTop} qualifiers across groups), or type names in manually.`
+      : `${PLAYOFF_STAGE_LABEL[editPlayoffStage]}: pulls winners from ${PLAYOFF_STAGE_LABEL[stages[stages.indexOf(editPlayoffStage)-1]]} once those matches have a score, or type names in manually.`;
+  } else {
+    autoBtn.textContent = '⟲ Auto-Fill from Standings';
+    document.getElementById('playoffHint').textContent =
+      `${PLAYOFF_STAGE_LABEL[editPlayoffStage]}: ${PLAYOFF_STAGE_SIZE[editPlayoffStage]} match${PLAYOFF_STAGE_SIZE[editPlayoffStage]===1?'':'es'} (top ${neededTop} from standings), or type names in manually.`;
+  }
 
   const wrap = document.getElementById('playoffRows');
   wrap.innerHTML = '';
@@ -938,7 +1267,7 @@ function updateSyncStatus(s){
 async function loadState(){
   if(!isConfigured()){
     updateSyncStatus('unconfigured');
-    ensureMatchupsShape(); ensurePlayoffsShape(); render(); renderTournamentSwitcher(); fitTitle();
+    ensureMatchupsShape(); ensurePlayoffsShape(); ensureGroupsShape(); render(); renderTournamentSwitcher(); fitTitle();
     pollLoop();
     return;
   }
@@ -964,6 +1293,7 @@ async function loadState(){
   }
   ensureMatchupsShape();
   ensurePlayoffsShape();
+  ensureGroupsShape();
   render();
   renderTournamentSwitcher();
   fitTitle();
@@ -1016,10 +1346,12 @@ function pollLoop(){
         lastSavedSnapshot = value;
         ensureMatchupsShape();
         ensurePlayoffsShape();
+        ensureGroupsShape();
         render();
         renderTournamentSwitcher();
         fitTitle();
         if(document.getElementById('playoffPanel').style.display !== 'none') renderPlayoffPanel();
+        if(document.getElementById('groupsPanel').style.display !== 'none') renderGroupsPanel();
       }
       updateSyncStatus('synced');
     }catch(e){ updateSyncStatus('error'); }
@@ -1402,6 +1734,23 @@ function renderMatchupPanel(){
           ${m.sets.length > 1 ? `<button type="button" class="set-remove" onclick="removeSet(${c},${si})">&times;</button>` : ''}
         </div>
       `).join('');
+    const isMixMatch = state.eventType === 'mixmatch';
+    const freeVal = (m.sets[0].a || m.sets[0].b) ? (m.sets[0].a + '-' + m.sets[0].b) : '';
+    const setsRowHtml = isMixMatch ? `
+      <div class="setsrow">
+        <span class="setslabel">Score</span>
+        <input type="text" class="freescore-input" placeholder="11-4" value="${freeVal}"
+          onchange="updateFreeScore(${c}, this.value)" />
+        <span class="setstotal">Sets won <b>${setsA}</b>&ndash;<b>${setsB}</b></span>
+      </div>
+    ` : `
+      <div class="setsrow">
+        <span class="setslabel">Sets</span>
+        ${setsHtml}
+        <button type="button" class="set-add" onclick="addSet(${c})">+ Set</button>
+        <span class="setstotal">Sets won <b>${setsA}</b>&ndash;<b>${setsB}</b> &nbsp;&bull;&nbsp; Points <b>${pointsA}</b>&ndash;<b>${pointsB}</b></span>
+      </div>
+    `;
     row.innerHTML = `
       <input type="text" class="courtlabel" value="${esc(state.courtNames[c])}"
         onchange="updateCourtName(${c},this.value)" />
@@ -1420,15 +1769,387 @@ function renderMatchupPanel(){
         <input type="text" class="matchup-input" placeholder="Player 2"
           value="${esc(m.b2)}" onchange="updateMatchup(${c},'b2',this.value)" />
       </div>
-      <div class="setsrow">
-        <span class="setslabel">Sets</span>
-        ${setsHtml}
-        <button type="button" class="set-add" onclick="addSet(${c})">+ Set</button>
-        <span class="setstotal">Sets won <b>${setsA}</b>&ndash;<b>${setsB}</b> &nbsp;&bull;&nbsp; Points <b>${pointsA}</b>&ndash;<b>${pointsB}</b></span>
-      </div>
+      ${setsRowHtml}
     `;
     wrap.appendChild(row);
   }
+}
+
+function updateFreeScore(courtIdx, value){
+  ensureMatchupsShape();
+  const m = state.matchups[editRound][courtIdx];
+  const match = String(value||'').match(/(\d+)\D+(\d+)/);
+  m.sets = [{ a: match ? Math.max(0,parseInt(match[1])) : 0, b: match ? Math.max(0,parseInt(match[2])) : 0 }];
+  applyMatchupTotals(courtIdx);
+  renderMatchupPanel();
+  render();
+  if(document.getElementById('flash').classList.contains('show')) renderFlash();
+  queueSave();
+}
+
+/* ---- tournament groups: fixed teams, round-robin within group, sets worth 3pts/1pt ---- */
+function ensureGroupsShape(){
+  if(!Array.isArray(state.groups)) state.groups = [];
+  if(!state.groupMatches || typeof state.groupMatches !== 'object') state.groupMatches = {};
+  state.groups.forEach(g=>{
+    if(!Array.isArray(g.teamIds)) g.teamIds = [];
+    if(!Array.isArray(state.groupMatches[g.id])) state.groupMatches[g.id] = [];
+    const matches = state.groupMatches[g.id];
+    matches.forEach(m=>{
+      if(!Array.isArray(m.sets) || m.sets.length===0) m.sets = [{a:0,b:0}];
+      m.sets.forEach(s=>{ s.a = Math.max(0, parseInt(s.a)||0); s.b = Math.max(0, parseInt(s.b)||0); });
+    });
+    // Migrate matches saved before round-robin rounds existed: greedily assign
+    // each match to the earliest round where neither team is already playing,
+    // preserving whatever order the matches were already in.
+    if(matches.some(m=> typeof m.round !== 'number')){
+      const used = [];
+      matches.forEach(m=>{
+        let r = 0;
+        while(true){
+          if(!used[r]) used[r] = new Set();
+          if(!used[r].has(m.aId) && !used[r].has(m.bId)) break;
+          r++;
+        }
+        used[r].add(m.aId); used[r].add(m.bId);
+        m.round = r;
+      });
+    }
+  });
+  const cEl = document.getElementById('groupCount');
+  if(cEl) cEl.textContent = state.groups.length;
+}
+
+// Standard circle-method round robin: fixes one team and rotates the rest so
+// every team plays every other team exactly once. Odd team counts get a bye
+// slot (null) that round. Returns an array of rounds, each an array of
+// [teamIdA, teamIdB] pairs (bye pairs already filtered out).
+function roundRobinSchedule(teamIds){
+  let arr = [...teamIds];
+  if(arr.length % 2 === 1) arr.push(null);
+  const n = arr.length;
+  if(n < 2) return [];
+  const fixed = arr[0];
+  let rotating = arr.slice(1);
+  const rounds = [];
+  for(let r=0; r<n-1; r++){
+    const order = [fixed, ...rotating];
+    const pairs = [];
+    for(let i=0; i<n/2; i++){
+      const a = order[i], b = order[n-1-i];
+      if(a!==null && b!==null) pairs.push([a,b]);
+    }
+    rounds.push(pairs);
+    rotating.unshift(rotating.pop());
+  }
+  return rounds;
+}
+
+function groupRoundCount(groupId){
+  const matches = state.groupMatches[groupId] || [];
+  let max = 0;
+  matches.forEach(m=>{ if(typeof m.round === 'number') max = Math.max(max, m.round+1); });
+  return max;
+}
+
+// Points a team earned in one specific round of their group — null if they had
+// a bye that round (no match scheduled for them).
+function teamRoundPoints(groupId, teamId, roundIdx){
+  const matches = state.groupMatches[groupId] || [];
+  const m = matches.find(mm => mm.round===roundIdx && (mm.aId===teamId || mm.bId===teamId));
+  if(!m) return null;
+  return groupMatchSidePoints(m, m.aId===teamId ? 'a' : 'b');
+}
+
+function teamsOnByeThisRound(groupId, roundIdx){
+  const g = state.groups.find(g=>g.id===groupId);
+  if(!g) return [];
+  const matches = (state.groupMatches[groupId]||[]).filter(m=>m.round===roundIdx);
+  const playing = new Set();
+  matches.forEach(m=>{ playing.add(m.aId); playing.add(m.bId); });
+  return g.teamIds.filter(tid=>!playing.has(tid));
+}
+
+function changeGroupCount(delta){
+  ensureGroupsShape();
+  if(delta > 0){
+    const idx = state.groups.length;
+    const id = 'g' + idx + '_' + Date.now();
+    state.groups.push({ id, name: 'Group ' + String.fromCharCode(65 + (idx % 26)), teamIds: [] });
+    state.groupMatches[id] = [];
+  } else {
+    const last = state.groups[state.groups.length-1];
+    if(!last) return;
+    if(last.teamIds.length > 0){ alert('Remove all teams from "' + last.name + '" before deleting it.'); return; }
+    state.groups.pop();
+    delete state.groupMatches[last.id];
+  }
+  renderGroupsPanel();
+  queueSave();
+}
+
+function toggleGroupsPanel(){
+  ensureGroupsShape();
+  const panel = document.getElementById('groupsPanel');
+  const on = panel.style.display !== 'block';
+  panel.style.display = on ? 'block' : 'none';
+  if(on) renderGroupsPanel();
+}
+
+function updateGroupName(groupId, value){
+  const g = state.groups.find(g=>g.id===groupId);
+  if(g) g.name = value.trim() || g.name;
+  render(); queueSave();
+}
+
+function addTeamToGroup(groupId){
+  const input = document.getElementById('groupAddInput-'+groupId);
+  const name = (input ? input.value : '').trim();
+  if(!name) return;
+  const g = state.groups.find(g=>g.id===groupId);
+  if(!g) return;
+  const team = {id: nextId++, name, scores:[0], groupId};
+  state.teams.push(team);
+  g.teamIds.push(team.id);
+  if(input) input.value = '';
+  renderGroupsPanel();
+  render();
+  queueSave();
+}
+
+function removeTeamFromGroup(groupId, teamId){
+  if(!confirm('Remove this team? Any group matches involving them will also be removed.')) return;
+  const g = state.groups.find(g=>g.id===groupId);
+  if(g) g.teamIds = g.teamIds.filter(id=>id!==teamId);
+  state.teams = state.teams.filter(t=>t.id!==teamId);
+  if(state.groupMatches[groupId]){
+    state.groupMatches[groupId] = state.groupMatches[groupId].filter(m=>m.aId!==teamId && m.bId!==teamId);
+  }
+  renderGroupsPanel();
+  render();
+  queueSave();
+}
+
+function generateGroupMatches(groupId){
+  const g = state.groups.find(g=>g.id===groupId);
+  if(!g) return;
+  if(g.teamIds.length < 2){ alert('Add at least 2 teams to "' + g.name + '" first.'); return; }
+  if(!confirm('Generate a full round-robin for "' + g.name + '" (' + g.teamIds.length + ' teams)? This replaces any existing matches for this group.')) return;
+  const schedule = roundRobinSchedule(g.teamIds); // rounds -> [[aId,bId], ...]
+  const matches = [];
+  schedule.forEach((pairs, r)=>{
+    pairs.forEach(([aId,bId], idx)=>{
+      matches.push({id:'m'+Date.now()+'_'+r+'_'+idx, round:r, aId, bId, sets:[{a:0,b:0}]});
+    });
+  });
+  state.groupMatches[g.id] = matches;
+  renderGroupsPanel();
+  render();
+  queueSave();
+}
+
+// A set is only counted once a real score is entered (0-0 = not played yet).
+// Winner of a set earns 3 group points, loser earns 1 — per-set, summed across
+// every set of every match a team has played in its group.
+function setPointsForSide(s, side){
+  const a = +s.a||0, b = +s.b||0;
+  if(a===0 && b===0) return null;
+  const own = side==='a' ? a : b, opp = side==='a' ? b : a;
+  return own > opp ? 3 : 1;
+}
+function groupMatchSidePoints(m, side){
+  return m.sets.reduce((sum,s)=> sum + (setPointsForSide(s, side) || 0), 0);
+}
+
+function updateGroupSetScore(groupId, matchIdx, setIdx, side, value){
+  const m = state.groupMatches[groupId][matchIdx];
+  m.sets[setIdx][side] = Math.max(0, parseInt(value)||0);
+  renderGroupsPanel();
+  render();
+  queueSave();
+}
+function addGroupSet(groupId, matchIdx){
+  state.groupMatches[groupId][matchIdx].sets.push({a:0,b:0});
+  renderGroupsPanel();
+  render();
+  queueSave();
+}
+function removeGroupSet(groupId, matchIdx, setIdx){
+  const m = state.groupMatches[groupId][matchIdx];
+  if(m.sets.length<=1) return;
+  m.sets.splice(setIdx,1);
+  renderGroupsPanel();
+  render();
+  queueSave();
+}
+
+// Standings for one group: total group points, then sets +/- as tiebreak.
+function groupStandings(groupId){
+  const g = state.groups.find(g=>g.id===groupId);
+  if(!g) return [];
+  const matches = state.groupMatches[groupId] || [];
+  return g.teamIds.map(tid=>{
+    const team = state.teams.find(t=>t.id===tid);
+    if(!team) return null;
+    let pts=0, setsWon=0, setsLost=0;
+    matches.forEach(m=>{
+      if(m.aId!==tid && m.bId!==tid) return;
+      const onA = m.aId===tid;
+      m.sets.forEach(s=>{
+        const a=+s.a||0, b=+s.b||0;
+        if(a===0 && b===0) return;
+        const own = onA?a:b, opp = onA?b:a;
+        pts += own>opp ? 3 : 1;
+        if(own>opp) setsWon++; else setsLost++;
+      });
+    });
+    return {id:tid, name:team.name, pts, setsWon, setsLost, diff: setsWon-setsLost};
+  }).filter(Boolean).sort((x,y)=> y.pts-x.pts || y.diff-x.diff || x.name.localeCompare(y.name));
+}
+
+// Which teams advance to the playoffs, and how many come from each group:
+// bracketSize / numGroups per group (floor), remaining slots filled by the
+// best-placed non-advancing teams across all groups (by points, then diff).
+function tournamentQualifiers(){
+  ensureGroupsShape();
+  const stages = activeStages();
+  const bracketSize = PLAYOFF_STAGE_SIZE[stages[0]] * 2;
+  const groups = state.groups;
+  if(groups.length===0) return [];
+  const perGroup = Math.floor(bracketSize / groups.length);
+  const remainder = bracketSize - perGroup*groups.length;
+  const advancing = [];
+  const leftover = [];
+  groups.forEach(g=>{
+    const standings = groupStandings(g.id);
+    standings.forEach((t,idx)=>{
+      const withGroup = Object.assign({}, t, {groupId:g.id, groupName:g.name, groupRank:idx+1});
+      if(idx < perGroup) advancing.push(withGroup);
+      else leftover.push(withGroup);
+    });
+  });
+  leftover.sort((a,b)=> b.pts-a.pts || b.diff-a.diff);
+  advancing.push(...leftover.slice(0, remainder));
+  advancing.sort((a,b)=> b.pts-a.pts || b.diff-a.diff);
+  return advancing;
+}
+
+function renderGroupsPanel(){
+  ensureGroupsShape();
+  const wrap = document.getElementById('groupBlocks');
+  wrap.innerHTML = '';
+  const teamName = (id)=> (state.teams.find(t=>t.id===id)||{}).name || '?';
+  state.groups.forEach(g=>{
+    const standings = groupStandings(g.id);
+    const matches = state.groupMatches[g.id] || [];
+    const block = document.createElement('div');
+    block.className = 'groupblock';
+    const chipsHtml = g.teamIds.map(tid=>`
+      <span class="groupteam-chip">${escHtml(teamName(tid))}<button type="button" onclick="removeTeamFromGroup('${g.id}',${tid})">&times;</button></span>
+    `).join('');
+    const matchesByRound = matches.map((m,mi)=>({m,mi}));
+    const roundCount = groupRoundCount(g.id);
+    let matchesHtml = '';
+    for(let r=0;r<roundCount;r++){
+      const roundMatches = matchesByRound.filter(x=>x.m.round===r);
+      if(roundMatches.length===0) continue;
+      matchesHtml += `<div class="hint" style="margin-top:10px;font-weight:700;color:var(--lime-bright);">Round ${r+1}</div>`;
+      matchesHtml += roundMatches.map(({m,mi})=>{
+        const ptsA = groupMatchSidePoints(m,'a'), ptsB = groupMatchSidePoints(m,'b');
+        const setsHtml = m.sets.map((s,si)=>`
+          <div class="setpill">
+            <span class="setnum">S${si+1}</span>
+            <input type="number" min="0" class="set-input" value="${s.a}" onchange="updateGroupSetScore('${g.id}',${mi},${si},'a',this.value)" />
+            <span class="set-vs">&ndash;</span>
+            <input type="number" min="0" class="set-input" value="${s.b}" onchange="updateGroupSetScore('${g.id}',${mi},${si},'b',this.value)" />
+            ${m.sets.length>1 ? `<button type="button" class="set-remove" onclick="removeGroupSet('${g.id}',${mi},${si})">&times;</button>` : ''}
+          </div>
+        `).join('');
+        return `
+          <div class="groupmatchrow">
+            <span class="groupmatch-name">${escHtml(teamName(m.aId))}</span>
+            <span class="vs">vs</span>
+            <span class="groupmatch-name">${escHtml(teamName(m.bId))}</span>
+            ${setsHtml}
+            <button type="button" class="set-add" onclick="addGroupSet('${g.id}',${mi})">+ Set</button>
+            <span class="setstotal">Points <b>${ptsA}</b>&ndash;<b>${ptsB}</b></span>
+          </div>
+        `;
+      }).join('');
+      const byeTeams = teamsOnByeThisRound(g.id, r);
+      if(byeTeams.length){
+        matchesHtml += `<div class="hint">Bye: ${byeTeams.map(tid=>escHtml(teamName(tid))).join(', ')}</div>`;
+      }
+    }
+    const standingsHtml = standings.length ? `
+      <table class="groupstandings">
+        <thead><tr><th>#</th><th>Team</th><th>Pts</th><th>Sets +/&minus;</th></tr></thead>
+        <tbody>
+          ${standings.map((t,i)=>`<tr><td>${i+1}</td><td>${escHtml(t.name)}</td><td>${t.pts}</td><td>${t.diff>0?'+':''}${t.diff}</td></tr>`).join('')}
+        </tbody>
+      </table>` : '';
+    block.innerHTML = `
+      <div class="groupblock-head">
+        <input class="groupname-input" value="${escHtml(g.name)}" onchange="updateGroupName('${g.id}',this.value)" />
+        <button class="btn-lime" onclick="generateGroupMatches('${g.id}')">&#8635; Generate Round-Robin</button>
+      </div>
+      <div class="groupteams">${chipsHtml}</div>
+      <div class="groupaddrow">
+        <input type="text" id="groupAddInput-${g.id}" placeholder="Add team name"
+          onkeydown="if(event.key==='Enter'){addTeamToGroup('${g.id}');event.preventDefault();}" />
+        <button class="btn-ghost" onclick="addTeamToGroup('${g.id}')">+ Add</button>
+      </div>
+      ${matches.length ? matchesHtml : '<div class="hint">No matches yet — add teams, then Generate Round-Robin.</div>'}
+      ${standingsHtml}
+    `;
+    wrap.appendChild(block);
+  });
+}
+
+// Main leaderboard, tournament mode: grouped standings with a Qualified badge
+// for whichever teams tournamentQualifiers() currently has advancing.
+function renderTournamentTable(){
+  ensureGroupsShape();
+  document.getElementById('category').value = state.category;
+  const head = document.getElementById('headRow');
+  const maxRounds = Math.max(0, ...state.groups.map(g=>groupRoundCount(g.id)));
+  let headHtml = '<th style="width:52px;">Rank</th><th class="teamcol">Team</th><th style="width:90px;">Group</th>';
+  for(let r=0;r<maxRounds;r++) headHtml += `<th>R${r+1}</th>`;
+  headHtml += '<th style="width:56px;">Pts</th><th style="width:80px;">Sets +/&minus;</th><th style="width:100px;">Qualified</th>';
+  head.innerHTML = headHtml;
+  const qualifiers = tournamentQualifiers();
+  const qualifiedIds = new Set(qualifiers.map(q=>q.id));
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  const colCount = 6 + maxRounds;
+  state.groups.forEach(g=>{
+    const standings = groupStandings(g.id);
+    if(standings.length===0) return;
+    const subhead = document.createElement('tr');
+    subhead.innerHTML = `<td colspan="${colCount}" style="text-align:left;padding:14px 6px 6px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.12em;color:var(--lime-bright);text-transform:uppercase;border-bottom:1px solid rgba(140,198,63,0.15);">${escHtml(g.name)}</td>`;
+    tbody.appendChild(subhead);
+    standings.forEach((t,i)=>{
+      const tr = document.createElement('tr');
+      const qualified = qualifiedIds.has(t.id);
+      tr.className = 'row' + (qualified ? ' qualified rank-1' : '');
+      const diffLabel = t.diff>0 ? `+${t.diff}` : `${t.diff}`;
+      let roundCells = '';
+      for(let r=0;r<maxRounds;r++){
+        const pts = teamRoundPoints(g.id, t.id, r);
+        roundCells += `<td>${pts===null ? '&ndash;' : pts}</td>`;
+      }
+      tr.innerHTML = `
+        <td class="rankcell">${rankLabel(i)}</td>
+        <td><span class="teamname" style="font-size:16px;">${escHtml(t.name)}</span></td>
+        <td style="text-align:center;">${escHtml(g.name)}</td>
+        ${roundCells}
+        <td class="total" style="font-size:18px;">${t.pts}</td>
+        <td class="diff ${t.diff>0?'pos':(t.diff<0?'neg':'')}">${diffLabel}</td>
+        <td style="text-align:center;">${qualified ? '<span class="qualified-badge">Qualified</span>' : ''}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  });
 }
 
 function addTeam(){
@@ -1449,13 +2170,20 @@ function updateName(id, val){
   t.name = val; queueSave();
 }
 function resetBoard(){
-  if(!confirm("Clear all teams and scores for this tournament?")) return;
-  const fresh = {category: state.category, rounds: 5, courts: state.courts || 3, teams: [], matchups: [], courtNames: [],
-    playoffs: { stage: 'quarterfinals', quarterfinals: [], semifinals: [], finals: [] }};
+  if(!confirm("Clear all teams and scores for this event?")) return;
+  const fresh = {
+    eventType: state.eventType || 'social',
+    category: state.category, rounds: 5, courts: state.courts || 3, teams: [], matchups: [], courtNames: [],
+    playoffs: emptyPlayoffsShape(),
+    playoffFormat: state.playoffFormat || 'qf',
+    groups: (state.groups||[]).map(g=>({id:g.id, name:g.name, teamIds:[]})),
+    groupMatches: {}
+  };
   boards.tournaments[boards.activeId] = fresh;
   state = fresh;
   recalcNextId();
   ensureMatchupsShape();
+  ensureGroupsShape();
   render(); queueSave();
 }
 
@@ -1497,6 +2225,21 @@ function ranked(){
     .sort((a,b)=> b.total - a.total || b.diff - a.diff);
 }
 
+// Flattened overall ranking used by Start Reveal — for tournament mode this
+// combines every group's standings (by points, then sets +/-) since there's
+// no single flat leaderboard the way mix & match / social boards have one.
+function overallRanked(){
+  if(state.eventType === 'tournament'){
+    ensureGroupsShape();
+    const all = [];
+    state.groups.forEach(g=>{
+      groupStandings(g.id).forEach(t=> all.push({id:t.id, name:t.name, total:t.pts, diff:t.diff}));
+    });
+    return all.sort((a,b)=> b.total-a.total || b.diff-a.diff);
+  }
+  return ranked();
+}
+
 function rankLabel(i){
   if(i===0) return "1ST";
   if(i===1) return "2ND";
@@ -1510,7 +2253,25 @@ function medal(i){
   return "";
 }
 
+function applyEventTypeUI(){
+  const t = state.eventType || 'social';
+  const isTournament = t === 'tournament';
+  const show = (id, on) => { const el = document.getElementById(id); if(el) el.style.display = on ? '' : 'none'; };
+  show('roundsCtrlWrap', !isTournament);
+  show('addTeamBtn', !isTournament);
+  show('matchupsBtn', !isTournament);
+  show('groupsBtn', isTournament);
+  show('flashMatchupsBtn', !isTournament);
+  if(isTournament){
+    document.getElementById('matchupPanel').style.display = 'none';
+  } else {
+    document.getElementById('groupsPanel').style.display = 'none';
+  }
+}
+
 function render(){
+  applyEventTypeUI();
+  if(state.eventType === 'tournament'){ renderTournamentTable(); return; }
   document.getElementById('category').value = state.category;
   document.getElementById('roundCount').textContent = state.rounds;
 
@@ -1614,7 +2375,7 @@ function startReveal(){
     championBanner.style.display = 'none';
   }
 
-  const list = ranked();
+  const list = overallRanked();
   // Top 3 always shown; include a 4th only if tied with 3rd place on both total and diff.
   const topList = list.slice(0, 3);
   if(list.length > 3 && list[3].total === list[2].total && list[3].diff === list[2].diff){
@@ -1849,18 +2610,21 @@ function bracketColumnHTML(matches, label, roundClass){
 function renderBracketFlash(){
   ensurePlayoffsShape();
   const p = state.playoffs;
+  const stages = activeStages();
   const wrap = document.getElementById('bracketColumns');
   const connector = (fromCount, toCount) => `
     <div class="bracket-connector">
       <div class="bracket-connector-spacer"></div>
       <div class="bracket-connector-lines">${bracketConnectorHTML(fromCount, toCount)}</div>
     </div>`;
-  wrap.innerHTML =
-    bracketColumnHTML(p.quarterfinals, 'Quarter Finals', 'round-quarter') +
-    connector(4,2) +
-    bracketColumnHTML(p.semifinals, 'Semi Finals', 'round-semi') +
-    connector(2,1) +
-    bracketColumnHTML(p.finals, 'Final', 'round-final');
+  let html = '';
+  stages.forEach((stage, i)=>{
+    html += bracketColumnHTML(p[stage], PLAYOFF_STAGE_LABEL[stage], 'round-'+stage);
+    if(i < stages.length-1){
+      html += connector(PLAYOFF_STAGE_SIZE[stage], PLAYOFF_STAGE_SIZE[stages[i+1]]);
+    }
+  });
+  wrap.innerHTML = html;
 
   const champBanner = document.getElementById('bracketChampion');
   const champ = decidedWinnerLoser(p.finals[0]);
