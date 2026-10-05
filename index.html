@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -320,6 +319,31 @@
   .stagetab.active{background:var(--gold);color:var(--ink);border-color:var(--gold);}
   .playoffrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(240,180,41,0.1);flex-wrap:wrap;}
   .playoffrow:last-child{border-bottom:none;}
+  .playoffrow.highlight{background:rgba(240,180,41,0.12);border-radius:8px;}
+  .playoff-matchmeta{display:flex;flex-direction:column;width:130px;flex-shrink:0;gap:2px;}
+  .playoff-matchmeta .matchlabel{width:auto !important;}
+  .playoff-feed{font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(245,247,243,0.5);}
+  .playoff-tag{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--gold);
+    background:rgba(240,180,41,0.12);border-radius:5px;padding:2px 6px;flex-shrink:0;min-width:26px;text-align:center;}
+  .playoff-move{display:flex;flex-direction:column;gap:2px;flex-shrink:0;}
+  .playoff-move button{background:none;border:1px solid rgba(240,180,41,0.3);color:var(--gold);border-radius:4px;
+    font-size:10px;line-height:1;padding:3px 6px;cursor:pointer;}
+  .playoff-move button:disabled{opacity:.25;cursor:default;}
+  .playoff-side{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--lime-bright);margin:14px 0 2px;}
+  .pv-title{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,247,243,0.45);margin:4px 0 6px;}
+  .pv-board{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;margin-bottom:10px;border-bottom:1px solid rgba(240,180,41,0.15);}
+  .pv-colwrap{display:flex;flex-direction:column;min-width:118px;flex:1;}
+  .pv-coltitle{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:4px;}
+  .pv-col{flex:1;display:flex;flex-direction:column;justify-content:space-around;}
+  .pv-match{border:1px solid rgba(240,180,41,0.28);border-radius:6px;margin:3px 0;cursor:pointer;background:rgba(17,22,18,0.6);}
+  .pv-match:hover{border-color:var(--gold);}
+  .pv-match.active{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold);}
+  .pv-mlabel{font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,247,243,0.4);padding:2px 6px 0;}
+  .pv-line{display:flex;justify-content:space-between;gap:6px;padding:2px 6px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--white);}
+  .pv-line span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .pv-line.win{color:var(--gold);}
+  .pv-line.tbd{color:rgba(245,247,243,0.35);font-weight:400;}
   .playoffrow .matchlabel{
     font-family:'Space Mono',monospace;font-size:12px;color:var(--gold);width:80px;flex-shrink:0;
   }
@@ -341,6 +365,11 @@
     display:none;align-items:center;justify-content:center;padding:20px;
   }
   #eventModalOverlay.show{display:flex;}
+  #scoringModalOverlay{
+    position:fixed;inset:0;background:rgba(2,4,3,0.82);z-index:60;
+    display:none;align-items:center;justify-content:center;padding:20px;
+  }
+  #scoringModalOverlay.show{display:flex;}
   .eventmodal{
     width:100%;max-width:480px;background:var(--bg2);border:1px solid rgba(140,198,63,0.3);
     border-radius:14px;padding:26px;
@@ -494,6 +523,15 @@
   .bracket-scroll::-webkit-scrollbar-thumb{background:rgba(140,198,63,0.35);border-radius:3px;}
   .bracket-columns{display:flex;align-items:stretch;height:clamp(220px,64vh,620px);min-width:min(920px,97vw);margin:0 auto;transform-origin:center center;}
   .bracket-col-wrap{display:flex;flex-direction:column;width:clamp(160px,23vw,290px);flex-shrink:0;}
+  .bracket-columns:not(.mirrored){justify-content:center;}
+  .bracket-columns.mirrored{min-width:min(1100px,100%);width:100%;}
+  .bracket-columns.mirrored .bracket-col-wrap{flex:1 1 0;width:auto;min-width:118px;}
+  .bracket-columns.mirrored .bracket-connector{width:clamp(10px,1.4vw,24px);}
+  .bracket-columns.mirrored .bp-seed{width:clamp(16px,1.8vw,26px);font-size:clamp(9px,1.5vh,13px);}
+  .bracket-columns.mirrored .bp-name{font-size:clamp(10px,1.8vh,15px);padding:clamp(3px,1vh,9px) clamp(4px,0.7vw,8px);}
+  .bracket-columns.mirrored .bp-score{width:clamp(18px,2.2vw,32px);font-size:clamp(9px,1.6vh,14px);}
+  .bracket-columns.mirrored .bracket-col-title{letter-spacing:.08em;font-size:clamp(8px,1.4vh,11px);}
+  .bracket-connector.mirror .bracket-connector-lines{transform:scaleX(-1);}
   .bracket-col-title{
     height:var(--bk-title-h);line-height:var(--bk-title-h);flex-shrink:0;text-align:center;
     font-family:'Space Mono',monospace;font-size:clamp(9px,1.7vh,13px);letter-spacing:.22em;text-transform:uppercase;
@@ -593,6 +631,14 @@
         <span id="editRoundLabel">Round 1 / 5</span>
         <button class="btn-ghost" onclick="changeEditRound(1)">&rarr;</button>
       </div>
+      <div class="roundctrl" id="scoringModeCtrl">
+        <span>Scoring</span>
+        <select id="scoringModeSelect" onchange="setScoringMode(this.value)"
+          style="background:var(--bg2);color:var(--white);border:1px solid rgba(140,198,63,0.3);border-radius:8px;padding:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;">
+          <option value="points">By points</option>
+          <option value="sets">By sets</option>
+        </select>
+      </div>
       <div class="roundctrl">
         <span>Courts</span>
         <button class="btn-ghost" onclick="changeCourts(-1)">&minus;</button>
@@ -613,15 +659,20 @@
         <option value="r16">Round of 16 (16 teams)</option>
         <option value="qf">Quarter Finals (8 teams)</option>
         <option value="sf">Semi Finals (4 teams)</option>
-        <option value="f">Final (2 teams)</option>
+        <option value="f">Final only (2 teams)</option>
       </select>
     </div>
     <div class="stagetabs" id="stageTabs"></div>
     <div class="matchup-head">
       <button class="btn-lime" id="playoffAutoBtn" onclick="handlePlayoffAutoFill()">&#8635; Auto-Fill from Standings</button>
+      <button class="btn-ghost" onclick="clearPlayoffStage()">Clear this round</button>
+      <button class="btn-ghost" onclick="openBracketFlash()">Show full bracket</button>
       <span class="hint" id="playoffHint"></span>
     </div>
+    <div class="pv-title">Bracket preview &mdash; tap a match to edit it</div>
+    <div class="pv-board" id="playoffPreview"></div>
     <div id="playoffRows"></div>
+    <datalist id="playoffTeamList"></datalist>
   </div>
 
   <div id="groupsPanel" class="editctrls" style="display:none;">
@@ -667,13 +718,29 @@
     </button>
     <button type="button" class="eventtype-opt" onclick="chooseEventType('mixmatch')">
       <b>2. Mix &amp; Match</b>
-      <span>Rotating partners each round, quick freeform scores like 11-4</span>
+      <span>Rotating partners each round &mdash; score by points (11-4, 24-19) or by sets</span>
     </button>
-    <button type="button" class="eventtype-opt" onclick="chooseEventType('social')">
-      <b>3. Social Event</b>
-      <span>Simple leaderboard, enter a score per round</span>
+    <button type="button" class="eventtype-opt" onclick="chooseEventType('league')">
+      <b>3. League</b>
+      <span>Groups, round-robin matches by sets (100pts win / 25pts loss, games +/&minus; tiebreak), auto playoffs</span>
     </button>
     <button type="button" class="btn-ghost modal-cancel" onclick="closeEventModal()">Cancel</button>
+  </div>
+</div>
+
+<div id="scoringModalOverlay">
+  <div class="eventmodal">
+    <h2>Mix &amp; Match scoring</h2>
+    <p>How should this event be scored? You can change it later in Matchups.</p>
+    <button type="button" class="eventtype-opt" onclick="chooseScoringMode('points')">
+      <b>By points</b>
+      <span>Type any score like 11-4 or 24-19. The leaderboard shows each team's exact points.</span>
+    </button>
+    <button type="button" class="eventtype-opt" onclick="chooseScoringMode('sets')">
+      <b>By sets</b>
+      <span>Enter set scores like 6-3. Each set won is 1 point; games +/&minus; is the tiebreak.</span>
+    </button>
+    <button type="button" class="btn-ghost modal-cancel" onclick="closeScoringModal()">Cancel</button>
   </div>
 </div>
 
@@ -739,7 +806,8 @@
 
 <script>
 let state = {
-  eventType: 'social', // 'tournament' | 'mixmatch' | 'social'
+  eventType: 'mixmatch', // 'tournament' | 'mixmatch' | 'league' (old 'social' boards migrate to mixmatch + sets)
+  scoringMode: 'sets', // mix & match only: 'points' (raw score totals) | 'sets' (1pt per set won)
   category: "Queen of the Court",
   rounds: 5,
   courts: 3,
@@ -828,12 +896,31 @@ function emptyPlayoffsShape(){
   return { stage:'quarterfinals', playoffFormat:'qf', round16:[], quarterfinals:[], semifinals:[], finals:[] };
 }
 
+// Tournament and League both use groups + round-robin + playoffs; they only
+// differ in how a group match is scored (see groupMatchSidePoints).
+function isGroupMode(){ return state.eventType === 'tournament' || state.eventType === 'league'; }
+function isLeague(){ return state.eventType === 'league'; }
+
 // Shared entry point for the "+ Event" button: user picks Tournament / Mix & Match /
 // Social Event, then a couple of quick prompts (name, and for tournaments, group
 // count + playoff size) finish setting up the board.
 function chooseEventType(type){
   closeEventModal();
-  const name = prompt('Name for the new event:', type==='tournament' ? 'New Tournament' : (type==='mixmatch' ? 'Mix & Match' : 'New Social Event'));
+  if(type === 'mixmatch'){
+    document.getElementById('scoringModalOverlay').classList.add('show');
+    return;
+  }
+  createEvent(type, null);
+}
+function closeScoringModal(){
+  document.getElementById('scoringModalOverlay').classList.remove('show');
+}
+function chooseScoringMode(mode){
+  closeScoringModal();
+  createEvent('mixmatch', mode);
+}
+function createEvent(type, scoringMode){
+  const name = prompt('Name for the new event:', type==='tournament' ? 'New Tournament' : (type==='league' ? 'New League' : 'Mix & Match'));
   if(name === null) return;
   const id = 't' + Date.now();
   const base = {
@@ -845,8 +932,10 @@ function chooseEventType(type){
     playoffFormat: 'qf',
     groups: [], groupMatches: {}
   };
-  if(type === 'tournament'){
-    let numGroups = parseInt(prompt('How many groups?', '4')) || 4;
+  if(type === 'mixmatch') base.scoringMode = scoringMode === 'points' ? 'points' : 'sets';
+  if(type === 'tournament' || type === 'league'){
+    const defGroups = type === 'league' ? '1' : '4';
+    let numGroups = parseInt(prompt('How many groups?', defGroups)) || parseInt(defGroups);
     numGroups = Math.max(1, Math.min(16, numGroups));
     base.groups = [];
     for(let i=0;i<numGroups;i++){
@@ -874,7 +963,15 @@ function deleteTournament(){
 }
 
 function ensureMatchupsShape(){
-  if(!state.eventType) state.eventType = 'social'; // migrate older single-mode boards
+  if(!state.eventType || state.eventType === 'social'){
+    // Social Event was merged into Mix & Match: old social boards keep their
+    // set-by-set scoring so nothing already on the board changes.
+    state.eventType = 'mixmatch';
+    if(!state.scoringMode) state.scoringMode = 'sets';
+  }
+  if(state.eventType === 'mixmatch' && state.scoringMode !== 'points' && state.scoringMode !== 'sets'){
+    state.scoringMode = 'points'; // older mix & match boards used quick 11-4 style scores
+  }
   if(!state.courts) state.courts = 3;
   if(!state.matchups) state.matchups = [];
   if(!state.courtNames) state.courtNames = [];
@@ -927,8 +1024,8 @@ function ensureMatchupsShape(){
   state.matchups.forEach((courts, r)=>{
     (courts||[]).forEach(m=>{
       if(!Array.isArray(m.sets)) return;
-      const setsA = matchupSideSetsWon(m, 'a');
-      const setsB = matchupSideSetsWon(m, 'b');
+      const setsA = matchupRoundScore(m, 'a');
+      const setsB = matchupRoundScore(m, 'b');
       [{names:[m.a1,m.a2], setsWon:setsA}, {names:[m.b1,m.b2], setsWon:setsB}].forEach(side=>{
         side.names.forEach(nameRaw=>{
           const name = (nameRaw||'').trim();
@@ -957,7 +1054,60 @@ function activeStages(){
   return PLAYOFF_STAGE_ORDER.slice(idx < 0 ? 1 : idx);
 }
 
-function emptyPlayoffMatch(){ return {a:'', b:'', scoreA:0, scoreB:0, aSeed:null, bSeed:null}; }
+function emptyPlayoffMatch(){ return {a:'', b:'', scoreA:0, scoreB:0, aSeed:null, bSeed:null, aTag:'', bTag:''}; }
+const PLAYOFF_STAGE_SHORT = { round16:'R16', quarterfinals:'QF', semifinals:'SF', finals:'Final' };
+
+// Standard seeded bracket order, so the top two seeds can only meet in the
+// final, the top four only in the semis, etc. For 8 teams this gives the
+// match order 1v8, 4v5, 3v6, 2v7 — match i's winner meets match i^1's winner.
+function bracketSeedPairs(size){
+  let order = [1, 2];
+  while(order.length < size){
+    const n = order.length * 2;
+    const next = [];
+    order.forEach(seed=>{ next.push(seed, n + 1 - seed); });
+    order = next;
+  }
+  const pairs = [];
+  for(let i=0;i<order.length;i+=2) pairs.push([order[i], order[i+1]]);
+  return pairs;
+}
+
+// Builds a stage's matches from a ranked list of names (best first). Missing
+// low seeds become BYEs (automatic win for the higher seed).
+function seededMatches(names, stage, tags){
+  const size = PLAYOFF_STAGE_SIZE[stage] * 2;
+  return bracketSeedPairs(size).map(([sa, sb])=>{
+    const a = names[sa-1] || '';
+    const b = names[sb-1];
+    const aTag = tags ? (tags[sa-1]||'') : '#'+sa;
+    if(!b){
+      return { a, b: a ? 'BYE' : '', scoreA: a ? 1 : 0, scoreB: 0, aSeed: sa, bSeed: null, aTag, bTag: '' };
+    }
+    return { a, b, scoreA:0, scoreB:0, aSeed: sa, bSeed: sb, aTag, bTag: tags ? (tags[sb-1]||'') : '#'+sb };
+  });
+}
+
+// Mirrored (two-sided) layout is used whenever there are 3+ rounds
+// (Round of 16 / Quarter Final starts): left half of each round on the left,
+// right half on the right, Final in the middle.
+function bracketIsMirrored(){ return activeStages().length >= 3; }
+
+// "Winner -> next round" label for match idx of a stage.
+function playoffFeedLabel(stage, idx){
+  const stages = activeStages();
+  const next = stages[stages.indexOf(stage)+1];
+  if(!next) return 'Winner = Champion';
+  const nIdx = Math.floor(idx/2);
+  return `Winner \u2192 ${PLAYOFF_STAGE_SHORT[next]} M${nIdx+1} (${idx%2===0?'top':'bottom'})`;
+}
+// Placeholder text for a slot in a later round, e.g. "Winner of R16 M3".
+function playoffSlotSource(stage, idx, side){
+  const stages = activeStages();
+  const prev = stages[stages.indexOf(stage)-1];
+  if(!prev) return side==='a' ? 'Team A' : 'Team B';
+  return `Winner of ${PLAYOFF_STAGE_SHORT[prev]} M${idx*2 + (side==='a'?1:2)}`;
+}
 
 function escHtml(s){
   return String(s===null||s===undefined?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
@@ -991,6 +1141,8 @@ function ensurePlayoffsShape(){
       if(typeof m.scoreB !== 'number') m.scoreB = 0;
       if(typeof m.aSeed !== 'number') m.aSeed = null;
       if(typeof m.bSeed !== 'number') m.bSeed = null;
+      if(typeof m.aTag !== 'string') m.aTag = (typeof m.aSeed === 'number') ? '#'+m.aSeed : '';
+      if(typeof m.bTag !== 'string') m.bTag = (typeof m.bSeed === 'number') ? '#'+m.bSeed : '';
     });
   });
   if(!activeStages().includes(editPlayoffStage)) editPlayoffStage = activeStages()[0] || 'quarterfinals';
@@ -1027,34 +1179,27 @@ function togglePlayoffPanel(){
 
 // Dispatches to the right auto-fill behavior for the current event type.
 function handlePlayoffAutoFill(){
-  if(state.eventType === 'tournament' && activeStages()[0] === editPlayoffStage){
-    autoFillPlayoffsFromGroups();
-  } else if(state.eventType === 'tournament'){
-    advanceWinnersToStage(editPlayoffStage);
-  } else {
-    autoFillPlayoffs();
-  }
+  const isFirst = activeStages()[0] === editPlayoffStage;
+  if(!isFirst){ advanceWinnersToStage(editPlayoffStage); return; }
+  if(isGroupMode()) autoFillPlayoffsFromGroups();
+  else autoFillPlayoffs();
 }
 
 // Seeds the current editPlayoffStage from the flat leaderboard standings
 // (used for mix & match / social events): 1v-last, 2v-second-last, etc.
 function autoFillPlayoffs(){
   ensurePlayoffsShape();
-  const stage = editPlayoffStage;
+  const stage = activeStages()[0];
   const needed = PLAYOFF_STAGE_SIZE[stage] * 2;
-  const list = ranked();
-  if(list.length < needed){
-    alert(`Not enough teams for ${PLAYOFF_STAGE_LABEL[stage]}: need at least ${needed} teams on the leaderboard, found ${list.length}.`);
-    return;
-  }
-  if(!confirm(`Fill ${PLAYOFF_STAGE_LABEL[stage]} from the top ${needed} teams in the current standings? This will replace any matchups already entered for this stage.`)) return;
-
-  const seeds = list.slice(0, needed).map(t=>t.name);
-  const matches = [];
-  for(let i=0;i<PLAYOFF_STAGE_SIZE[stage];i++){
-    matches.push({ a: seeds[i], b: seeds[needed-1-i], scoreA:0, scoreB:0, aSeed: i+1, bSeed: needed-i });
-  }
-  state.playoffs[stage] = matches;
+  const list = ranked().filter(t=>(t.name||'').trim());
+  if(list.length < 2){ alert('Add at least 2 teams to the leaderboard first.'); return; }
+  const byes = Math.max(0, needed - list.length);
+  const msg = byes > 0
+    ? `Only ${list.length} team(s) for a ${needed}-team ${PLAYOFF_STAGE_LABEL[stage]} \u2014 the top ${byes} seed(s) get a BYE. Continue?`
+    : `Fill ${PLAYOFF_STAGE_LABEL[stage]} from the top ${needed} in the standings (seeded so 1 and 2 can only meet in the Final)? This replaces what's entered for this round.`;
+  if(!confirm(msg)) return;
+  state.playoffs[stage] = seededMatches(list.slice(0, needed).map(t=>t.name), stage);
+  editPlayoffStage = stage;
   renderPlayoffPanel();
   queueSave();
 }
@@ -1068,18 +1213,27 @@ function autoFillPlayoffs(){
 // advances per group, it's simply groupX-1st vs groupY-1st.
 function crossGroupPlayoffMatches(groups, perGroup){
   const half = groups.length / 2;
-  const matches = [];
+  const tag = (g, rank)=> (String(g.name||'').replace(/^group\s*/i,'') || g.name) + rank;
+  const mk = (gx, ix, gy, iy)=>{
+    const sx = groupStandings(gx.id), sy = groupStandings(gy.id);
+    return { a: sx[ix].name, b: sy[iy].name, scoreA:0, scoreB:0, aSeed:null, bSeed:null,
+             aTag: tag(gx, ix+1), bTag: tag(gy, iy+1) };
+  };
+  if(perGroup === 1){
+    // winners only: pair groups mirror-style (A v last, B v second-last ...)
+    const matches = [];
+    for(let i=0;i<half;i++) matches.push(mk(groups[i],0, groups[groups.length-1-i],0));
+    return matches;
+  }
+  // Top 2 per group: X1 v Y2 in one half of the draw, Y1 v X2 in the other,
+  // so two teams from the same group can only meet again in the Final.
+  const top = [], bottom = [];
   for(let i=0;i<half;i++){
     const gx = groups[i], gy = groups[groups.length-1-i];
-    const sx = groupStandings(gx.id), sy = groupStandings(gy.id);
-    if(perGroup === 1){
-      matches.push({ a: sx[0].name, b: sy[0].name, scoreA:0, scoreB:0, aSeed:null, bSeed:null });
-    } else {
-      matches.push({ a: sx[0].name, b: sy[1].name, scoreA:0, scoreB:0, aSeed:null, bSeed:null });
-      matches.push({ a: sy[0].name, b: sx[1].name, scoreA:0, scoreB:0, aSeed:null, bSeed:null });
-    }
+    top.push(mk(gx,0, gy,1));
+    bottom.unshift(mk(gy,0, gx,1));
   }
-  return matches;
+  return top.concat(bottom);
 }
 
 // Seeds the FIRST active playoff stage from group standings (tournament mode).
@@ -1115,19 +1269,11 @@ function autoFillPlayoffsFromGroups(){
     if(qualifiers.length === 0){ alert('No group standings to seed from yet — enter some set scores first.'); return; }
     confirmMsg = numByes > 0
       ? `Only ${qualifiers.length} team(s) are available for a ${needed}-team bracket — the top ${numByes} seed(s) will get a BYE (automatic win) this round. Continue?`
-      : `Fill ${PLAYOFF_STAGE_LABEL[stage]} with the top ${needed} qualifying teams from the groups (1v${needed}, 2v${needed-1}, ...)? This will replace any matchups already entered for this stage.`;
+      : `Fill ${PLAYOFF_STAGE_LABEL[stage]} with the top ${needed} qualifying teams from the groups (seeded so 1 and 2 can only meet in the Final)? This will replace any matchups already entered for this stage.`;
     if(!confirm(confirmMsg)) return;
-    const seeds = qualifiers.map(t=>t.name);
-    matches = [];
-    for(let i=0;i<PLAYOFF_STAGE_SIZE[stage];i++){
-      const topIdx = i, bottomIdx = needed-1-i;
-      const aName = seeds[topIdx] || '';
-      const isBye = bottomIdx >= seeds.length;
-      const bName = isBye ? 'BYE' : seeds[bottomIdx];
-      matches.push(isBye
-        ? { a: aName, b: 'BYE', scoreA: 1, scoreB: 0, aSeed: topIdx+1, bSeed: null }
-        : { a: aName, b: bName, scoreA: 0, scoreB: 0, aSeed: topIdx+1, bSeed: bottomIdx+1 });
-    }
+    const top = qualifiers.slice(0, needed);
+    const tags = top.map((t,i)=> '#'+(i+1));
+    matches = seededMatches(top.map(t=>t.name), stage, tags);
     state.playoffs[stage] = matches;
     editPlayoffStage = stage;
     renderPlayoffPanel();
@@ -1148,42 +1294,81 @@ function advanceWinnersToStage(stage){
   ensurePlayoffsShape();
   const stages = activeStages();
   const idx = stages.indexOf(stage);
-  if(idx <= 0){ autoFillPlayoffsFromGroups(); return; }
+  if(idx <= 0){ handlePlayoffAutoFill(); return; }
   const prevStage = stages[idx-1];
   const prevMatches = state.playoffs[prevStage];
   const results = prevMatches.map(decidedWinnerLoser);
-  if(results.some(r=>!r)){
-    alert(`Every match in ${PLAYOFF_STAGE_LABEL[prevStage]} needs a decisive score before advancing winners.`);
+  if(results.every(r=>!r)){
+    alert(`No ${PLAYOFF_STAGE_LABEL[prevStage]} match has a winning score yet.`);
     return;
   }
-  if(!confirm(`Advance winners from ${PLAYOFF_STAGE_LABEL[prevStage]} into ${PLAYOFF_STAGE_LABEL[stage]}? This replaces current entries for this stage.`)) return;
-  const matches = [];
+  const pending = results.filter(r=>!r).length;
+  const msg = pending
+    ? `Move the decided ${PLAYOFF_STAGE_LABEL[prevStage]} winners into ${PLAYOFF_STAGE_LABEL[stage]}? ${pending} match(es) without a result yet will keep their current slot.`
+    : `Move all ${PLAYOFF_STAGE_LABEL[prevStage]} winners into ${PLAYOFF_STAGE_LABEL[stage]}? This replaces what's entered for this round.`;
+  if(!confirm(msg)) return;
+  const cur = state.playoffs[stage];
   for(let i=0;i<PLAYOFF_STAGE_SIZE[stage];i++){
-    matches.push({ a: results[2*i].winner, b: results[2*i+1].winner, scoreA:0, scoreB:0, aSeed:null, bSeed:null });
+    const m = cur[i];
+    const ra = results[2*i], rb = results[2*i+1];
+    const tagOf = (r, pm)=> r ? (r.winner===(pm.a||'').trim() ? pm.aTag : pm.bTag) : '';
+    if(ra){ m.a = ra.winner; m.aTag = tagOf(ra, prevMatches[2*i]); m.aSeed = null; }
+    if(rb){ m.b = rb.winner; m.bTag = tagOf(rb, prevMatches[2*i+1]); m.bSeed = null; }
   }
-  state.playoffs[stage] = matches;
   renderPlayoffPanel();
   queueSave();
 }
 
+function clearPlayoffStage(){
+  ensurePlayoffsShape();
+  if(!confirm(`Clear every team and score in ${PLAYOFF_STAGE_LABEL[editPlayoffStage]}?`)) return;
+  state.playoffs[editPlayoffStage] = state.playoffs[editPlayoffStage].map(()=>emptyPlayoffMatch());
+  renderPlayoffPanel();
+  queueSave();
+}
+
+function movePlayoffMatch(idx, delta){
+  const arr = state.playoffs[editPlayoffStage];
+  const j = idx + delta;
+  if(j < 0 || j >= arr.length) return;
+  [arr[idx], arr[j]] = [arr[j], arr[idx]];
+  highlightPlayoffIdx = j;
+  renderPlayoffPanel();
+  queueSave();
+}
+
+let highlightPlayoffIdx = null;
+function jumpToPlayoffMatch(stage, idx){
+  editPlayoffStage = stage;
+  state.playoffs.stage = stage;
+  highlightPlayoffIdx = idx;
+  renderPlayoffPanel();
+  const row = document.getElementById('playoffRow-'+idx);
+  if(row) row.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
 function updatePlayoffTeam(idx, side, value){
   ensurePlayoffsShape();
-  state.playoffs[editPlayoffStage][idx][side] = value;
-  // the seed number came from standings at fill time — once a name is hand-edited it's stale, so clear it
-  state.playoffs[editPlayoffStage][idx][side==='a' ? 'aSeed' : 'bSeed'] = null;
+  const m = state.playoffs[editPlayoffStage][idx];
+  m[side] = value;
+  // seed/group tag came from standings at fill time — stale once hand-edited
+  m[side==='a' ? 'aSeed' : 'bSeed'] = null;
+  m[side==='a' ? 'aTag' : 'bTag'] = '';
+  renderPlayoffPreview();
   queueSave();
 }
 function updatePlayoffScore(idx, side, value){
   ensurePlayoffsShape();
   state.playoffs[editPlayoffStage][idx][side] = Math.max(0, parseInt(value)||0);
+  renderPlayoffPreview();
   queueSave();
 }
 
 function renderPlayoffPanel(){
   ensurePlayoffsShape();
-  const isTournament = state.eventType === 'tournament';
-  document.getElementById('playoffFormatCtrl').style.display = isTournament ? 'flex' : 'none';
-  if(isTournament) document.getElementById('playoffFormatSelect').value = state.playoffFormat;
+  const isTournament = isGroupMode();
+  document.getElementById('playoffFormatCtrl').style.display = 'flex';
+  document.getElementById('playoffFormatSelect').value = state.playoffFormat;
 
   const stages = activeStages();
   const tabsWrap = document.getElementById('stageTabs');
@@ -1191,41 +1376,109 @@ function renderPlayoffPanel(){
     `<button class="stagetab${stage===editPlayoffStage?' active':''}" onclick="setPlayoffStage('${stage}')">${PLAYOFF_STAGE_LABEL[stage]}</button>`
   ).join('');
 
-  const neededTop = PLAYOFF_STAGE_SIZE[editPlayoffStage] * 2;
+  const count = PLAYOFF_STAGE_SIZE[editPlayoffStage];
+  const neededTop = count * 2;
   const isFirstStage = stages[0] === editPlayoffStage;
   const autoBtn = document.getElementById('playoffAutoBtn');
-  if(isTournament){
-    autoBtn.textContent = isFirstStage ? '⟲ Auto-Fill from Groups' : '⟲ Advance Winners from Previous Round';
-    document.getElementById('playoffHint').textContent = isFirstStage
-      ? `${PLAYOFF_STAGE_LABEL[editPlayoffStage]}: ${PLAYOFF_STAGE_SIZE[editPlayoffStage]} match${PLAYOFF_STAGE_SIZE[editPlayoffStage]===1?'':'es'} (top ${neededTop} qualifiers across groups), or type names in manually.`
-      : `${PLAYOFF_STAGE_LABEL[editPlayoffStage]}: pulls winners from ${PLAYOFF_STAGE_LABEL[stages[stages.indexOf(editPlayoffStage)-1]]} once those matches have a score, or type names in manually.`;
-  } else {
-    autoBtn.textContent = '⟲ Auto-Fill from Standings';
+  const plural = count===1 ? '' : 'es';
+  if(isFirstStage){
+    autoBtn.textContent = isTournament ? '\u27F2 Auto-Fill from Groups' : '\u27F2 Auto-Fill from Standings';
     document.getElementById('playoffHint').textContent =
-      `${PLAYOFF_STAGE_LABEL[editPlayoffStage]}: ${PLAYOFF_STAGE_SIZE[editPlayoffStage]} match${PLAYOFF_STAGE_SIZE[editPlayoffStage]===1?'':'es'} (top ${neededTop} from standings), or type names in manually.`;
+      `${PLAYOFF_STAGE_LABEL[editPlayoffStage]}: ${count} match${plural} (top ${neededTop}). Auto-fill, or type/pick team names yourself.`;
+  } else {
+    autoBtn.textContent = '\u27F2 Advance Winners from ' + PLAYOFF_STAGE_LABEL[stages[stages.indexOf(editPlayoffStage)-1]];
+    document.getElementById('playoffHint').textContent =
+      `${PLAYOFF_STAGE_LABEL[editPlayoffStage]}: ${count} match${plural}. Advance winners, or type/pick team names yourself.`;
   }
+
+  // team name suggestions for manual entry
+  const dl = document.getElementById('playoffTeamList');
+  if(dl) dl.innerHTML = [...new Set(state.teams.map(t=>(t.name||'').trim()).filter(Boolean))]
+    .sort((a,b)=>a.localeCompare(b)).map(n=>`<option value="${escHtml(n)}"></option>`).join('');
 
   const wrap = document.getElementById('playoffRows');
   wrap.innerHTML = '';
-  const esc = (s)=> String(s===null||s===undefined?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   const matches = state.playoffs[editPlayoffStage];
+  const mirrored = bracketIsMirrored() && editPlayoffStage !== 'finals';
   matches.forEach((m,i)=>{
+    if(mirrored && (i===0 || i===count/2)){
+      const h = document.createElement('div');
+      h.className = 'playoff-side';
+      h.textContent = i===0 ? 'Left side of bracket' : 'Right side of bracket';
+      wrap.appendChild(h);
+    }
     const row = document.createElement('div');
-    row.className = 'playoffrow';
+    row.className = 'playoffrow' + (highlightPlayoffIdx===i ? ' highlight' : '');
+    row.id = 'playoffRow-' + i;
     row.innerHTML = `
-      <span class="matchlabel">Match ${i+1}</span>
-      <input type="text" class="matchup-input" placeholder="Team A"
-        value="${esc(m.a)}" onchange="updatePlayoffTeam(${i},'a',this.value)" />
+      <div class="playoff-move">
+        <button type="button" title="Move up" onclick="movePlayoffMatch(${i},-1)" ${i===0?'disabled':''}>&#9650;</button>
+        <button type="button" title="Move down" onclick="movePlayoffMatch(${i},1)" ${i===count-1?'disabled':''}>&#9660;</button>
+      </div>
+      <div class="playoff-matchmeta">
+        <span class="matchlabel">${PLAYOFF_STAGE_SHORT[editPlayoffStage]} Match ${i+1}</span>
+        <span class="playoff-feed">${escHtml(playoffFeedLabel(editPlayoffStage, i))}</span>
+      </div>
+      <span class="playoff-tag">${escHtml(m.aTag||'')}</span>
+      <input type="text" class="matchup-input" list="playoffTeamList" placeholder="${escHtml(playoffSlotSource(editPlayoffStage,i,'a'))}"
+        value="${escHtml(m.a)}" onchange="updatePlayoffTeam(${i},'a',this.value)" />
       <input type="number" min="0" class="matchup-score" value="${m.scoreA}"
         onchange="updatePlayoffScore(${i},'scoreA',this.value)" />
       <span class="vs">vs</span>
       <input type="number" min="0" class="matchup-score" value="${m.scoreB}"
         onchange="updatePlayoffScore(${i},'scoreB',this.value)" />
-      <input type="text" class="matchup-input" placeholder="Team B"
-        value="${esc(m.b)}" onchange="updatePlayoffTeam(${i},'b',this.value)" />
+      <input type="text" class="matchup-input" list="playoffTeamList" placeholder="${escHtml(playoffSlotSource(editPlayoffStage,i,'b'))}"
+        value="${escHtml(m.b)}" onchange="updatePlayoffTeam(${i},'b',this.value)" />
+      <span class="playoff-tag">${escHtml(m.bTag||'')}</span>
     `;
     wrap.appendChild(row);
   });
+  highlightPlayoffIdx = null;
+  renderPlayoffPreview();
+}
+
+// Columns for the bracket, in left-to-right display order. Each entry is
+// {stage, idxs:[match indexes], side:'left'|'right'|'center'}. The same
+// layout drives both the panel preview and the Flash Playoff Bracket, so
+// what you edit is exactly what's displayed.
+function bracketLayoutColumns(){
+  const stages = activeStages();
+  if(!bracketIsMirrored()){
+    return stages.map(stage=>({stage, side:'center', idxs:[...Array(PLAYOFF_STAGE_SIZE[stage]).keys()]}));
+  }
+  const nonFinal = stages.filter(s=>s!=='finals');
+  const half = (stage, right)=>{
+    const n = PLAYOFF_STAGE_SIZE[stage];
+    const all = [...Array(n).keys()];
+    return right ? all.slice(n/2) : all.slice(0, n/2);
+  };
+  const left = nonFinal.map(stage=>({stage, side:'left', idxs: half(stage,false)}));
+  const right = nonFinal.slice().reverse().map(stage=>({stage, side:'right', idxs: half(stage,true)}));
+  return [...left, {stage:'finals', side:'center', idxs:[0]}, ...right];
+}
+
+function renderPlayoffPreview(){
+  const el = document.getElementById('playoffPreview');
+  if(!el) return;
+  const p = state.playoffs;
+  el.innerHTML = bracketLayoutColumns().map(col=>{
+    const cells = col.idxs.map(i=>{
+      const m = p[col.stage][i];
+      const d = decidedWinnerLoser(m);
+      const played = d || m.scoreA>0 || m.scoreB>0;
+      const line = (side)=>{
+        const name = (m[side]||'').trim();
+        const win = d && d.winner===name;
+        const score = played ? (side==='a'?m.scoreA:m.scoreB) : '';
+        const tag = m[side+'Tag'] ? `<b style="color:var(--gold);font-size:10px;margin-right:4px;">${escHtml(m[side+'Tag'])}</b>` : '';
+        return `<div class="pv-line${win?' win':''}${name?'':' tbd'}"><span>${tag}${escHtml(name || playoffSlotSource(col.stage,i,side))}</span><span>${score}</span></div>`;
+      };
+      const active = col.stage===editPlayoffStage ? ' active' : '';
+      return `<div class="pv-match${active}" onclick="jumpToPlayoffMatch('${col.stage}',${i})">
+        <div class="pv-mlabel">${PLAYOFF_STAGE_SHORT[col.stage]} M${i+1}</div>${line('a')}${line('b')}</div>`;
+    }).join('');
+    return `<div class="pv-colwrap"><div class="pv-coltitle">${PLAYOFF_STAGE_SHORT[col.stage]}</div><div class="pv-col">${cells}</div></div>`;
+  }).join('');
 }
 
 function isConfigured(){
@@ -1431,11 +1684,36 @@ function matchupSideSetsWon(m, side){
   }, 0);
 }
 
+// What a pair earns for one round, depending on the Mix & Match scoring mode:
+//  - 'points': the exact points they scored (e.g. 24-19 -> 24 and 19)
+//  - 'sets'  : 1 point per set won (e.g. 6-3, 4-6, 6-4 -> 2 and 1)
+// Either way the +/- column is own points/games minus the opponent's (teamPointDiff).
+function isPointsScoring(){ return state.eventType === 'mixmatch' && state.scoringMode === 'points'; }
+function matchupRoundScore(m, side){
+  return isPointsScoring() ? matchupSidePoints(m, side) : matchupSideSetsWon(m, side);
+}
+function setScoringMode(mode){
+  if(mode !== 'points' && mode !== 'sets') return;
+  if(mode === state.scoringMode) return;
+  if(mode === 'points'){
+    const multiSet = state.matchups.some(r=>(r||[]).some(m=>Array.isArray(m.sets) && m.sets.filter(s=>(+s.a||0)||(+s.b||0)).length>1));
+    if(multiSet && !confirm('Some matchups have more than one set. By points only keeps one score per match, but the points from every set will be added together on the leaderboard. Switch anyway?')){
+      renderMatchupPanel(); return;
+    }
+  }
+  state.scoringMode = mode;
+  ensureMatchupsShape(); // re-derives every round score from the scores on record
+  renderMatchupPanel();
+  render();
+  if(document.getElementById('flash').classList.contains('show')) renderFlash();
+  queueSave();
+}
+
 function applyMatchupTotals(courtIdx){
   ensureMatchupsShape();
   const m = state.matchups[editRound][courtIdx];
-  const setsA = matchupSideSetsWon(m, 'a');
-  const setsB = matchupSideSetsWon(m, 'b');
+  const setsA = matchupRoundScore(m, 'a');
+  const setsB = matchupRoundScore(m, 'b');
   [{names:[m.a1,m.a2], setsWon: setsA}, {names:[m.b1,m.b2], setsWon: setsB}].forEach(side=>{
     side.names.forEach(nameRaw=>{
       const name = (nameRaw||'').trim();
@@ -1710,6 +1988,8 @@ function updateCourtName(idx, value){
 
 function renderMatchupPanel(){
   ensureMatchupsShape();
+  const modeSel = document.getElementById('scoringModeSelect');
+  if(modeSel) modeSel.value = state.scoringMode === 'points' ? 'points' : 'sets';
   document.getElementById('editRoundLabel').textContent = 'Round ' + (editRound+1) + ' / ' + state.rounds;
   document.getElementById('courtCount').textContent = state.courts;
   const wrap = document.getElementById('courtRows');
@@ -1734,21 +2014,21 @@ function renderMatchupPanel(){
           ${m.sets.length > 1 ? `<button type="button" class="set-remove" onclick="removeSet(${c},${si})">&times;</button>` : ''}
         </div>
       `).join('');
-    const isMixMatch = state.eventType === 'mixmatch';
+    const isMixMatch = isPointsScoring(); // by-points shows the quick single-score box
     const freeVal = (m.sets[0].a || m.sets[0].b) ? (m.sets[0].a + '-' + m.sets[0].b) : '';
     const setsRowHtml = isMixMatch ? `
       <div class="setsrow">
         <span class="setslabel">Score</span>
         <input type="text" class="freescore-input" placeholder="11-4" value="${freeVal}"
           onchange="updateFreeScore(${c}, this.value)" />
-        <span class="setstotal">Sets won <b>${setsA}</b>&ndash;<b>${setsB}</b></span>
+        <span class="setstotal">Points <b>${pointsA}</b>&ndash;<b>${pointsB}</b></span>
       </div>
     ` : `
       <div class="setsrow">
         <span class="setslabel">Sets</span>
         ${setsHtml}
         <button type="button" class="set-add" onclick="addSet(${c})">+ Set</button>
-        <span class="setstotal">Sets won <b>${setsA}</b>&ndash;<b>${setsB}</b> &nbsp;&bull;&nbsp; Points <b>${pointsA}</b>&ndash;<b>${pointsB}</b></span>
+        <span class="setstotal">Sets won <b>${setsA}</b>&ndash;<b>${setsB}</b> &nbsp;&bull;&nbsp; Games +/&minus; <b>${pointsA-pointsB>0?'+':''}${pointsA-pointsB}</b></span>
       </div>
     `;
     row.innerHTML = `
@@ -1760,9 +2040,9 @@ function renderMatchupPanel(){
         <input type="text" class="matchup-input" placeholder="Player 2"
           value="${esc(m.a2)}" onchange="updateMatchup(${c},'a2',this.value)" />
       </div>
-      <span class="matchup-score" style="pointer-events:none;" title="Sets won">${setsA}</span>
+      <span class="matchup-score" style="pointer-events:none;" title="${isMixMatch ? 'Points' : 'Sets won'}">${isMixMatch ? pointsA : setsA}</span>
       <span class="vs">vs</span>
-      <span class="matchup-score" style="pointer-events:none;" title="Sets won">${setsB}</span>
+      <span class="matchup-score" style="pointer-events:none;" title="${isMixMatch ? 'Points' : 'Sets won'}">${isMixMatch ? pointsB : setsB}</span>
       <div class="pairgroup">
         <input type="text" class="matchup-input" placeholder="Player 1"
           value="${esc(m.b1)}" onchange="updateMatchup(${c},'b1',this.value)" />
@@ -1957,7 +2237,36 @@ function setPointsForSide(s, side){
   const own = side==='a' ? a : b, opp = side==='a' ? b : a;
   return own > opp ? 3 : 1;
 }
+// League scoring: points are per MATCHUP, not per set. Whoever wins more sets
+// takes the matchup (100 pts), the other side gets 25 — same for 2 or 3 sets.
+// A matchup with no sets entered yet, or level on sets (e.g. 1-1 mid-match),
+// gives no points to either side until it's decided.
+const LEAGUE_WIN_PTS = 100, LEAGUE_LOSS_PTS = 25;
+function matchSetsWon(m, side){
+  let won = 0;
+  m.sets.forEach(s=>{
+    const a = +s.a||0, b = +s.b||0;
+    if(a===0 && b===0) return;
+    const own = side==='a' ? a : b, opp = side==='a' ? b : a;
+    if(own > opp) won++;
+  });
+  return won;
+}
+function leagueMatchSidePoints(m, side){
+  const own = matchSetsWon(m, side), opp = matchSetsWon(m, side==='a' ? 'b' : 'a');
+  if(own === opp) return 0;
+  return own > opp ? LEAGUE_WIN_PTS : LEAGUE_LOSS_PTS;
+}
+// Game difference for one side of a match: own games minus opponent games,
+// summed over every played set (e.g. 6-3, 4-6, 6-4 = +3 / -3).
+function matchGameDiff(m, side){
+  return m.sets.reduce((sum,s)=>{
+    const a = +s.a||0, b = +s.b||0;
+    return sum + (side==='a' ? a-b : b-a);
+  }, 0);
+}
 function groupMatchSidePoints(m, side){
+  if(isLeague()) return leagueMatchSidePoints(m, side);
   return m.sets.reduce((sum,s)=> sum + (setPointsForSide(s, side) || 0), 0);
 }
 
@@ -1991,10 +2300,16 @@ function groupStandings(groupId){
   return g.teamIds.map(tid=>{
     const team = state.teams.find(t=>t.id===tid);
     if(!team) return null;
-    let pts=0, setsWon=0, setsLost=0;
+    let pts=0, setsWon=0, setsLost=0, gameDiff=0;
     matches.forEach(m=>{
       if(m.aId!==tid && m.bId!==tid) return;
       const onA = m.aId===tid;
+      if(isLeague()){
+        const side = onA ? 'a' : 'b';
+        pts += leagueMatchSidePoints(m, side);
+        gameDiff += matchGameDiff(m, side);
+        return;
+      }
       m.sets.forEach(s=>{
         const a=+s.a||0, b=+s.b||0;
         if(a===0 && b===0) return;
@@ -2003,7 +2318,7 @@ function groupStandings(groupId){
         if(own>opp) setsWon++; else setsLost++;
       });
     });
-    return {id:tid, name:team.name, pts, setsWon, setsLost, diff: setsWon-setsLost};
+    return {id:tid, name:team.name, pts, setsWon, setsLost, diff: isLeague() ? gameDiff : setsWon-setsLost};
   }).filter(Boolean).sort((x,y)=> y.pts-x.pts || y.diff-x.diff || x.name.localeCompare(y.name));
 }
 
@@ -2083,7 +2398,7 @@ function renderGroupsPanel(){
     }
     const standingsHtml = standings.length ? `
       <table class="groupstandings">
-        <thead><tr><th>#</th><th>Team</th><th>Pts</th><th>Sets +/&minus;</th></tr></thead>
+        <thead><tr><th>#</th><th>Team</th><th>Pts</th><th>${isLeague() ? 'Games' : 'Sets'} +/&minus;</th></tr></thead>
         <tbody>
           ${standings.map((t,i)=>`<tr><td>${i+1}</td><td>${escHtml(t.name)}</td><td>${t.pts}</td><td>${t.diff>0?'+':''}${t.diff}</td></tr>`).join('')}
         </tbody>
@@ -2115,7 +2430,7 @@ function renderTournamentTable(){
   const maxRounds = Math.max(0, ...state.groups.map(g=>groupRoundCount(g.id)));
   let headHtml = '<th style="width:52px;">Rank</th><th class="teamcol">Team</th><th style="width:90px;">Group</th>';
   for(let r=0;r<maxRounds;r++) headHtml += `<th>R${r+1}</th>`;
-  headHtml += '<th style="width:56px;">Pts</th><th style="width:80px;">Sets +/&minus;</th><th style="width:100px;">Qualified</th>';
+  headHtml += `<th style="width:56px;">Pts</th><th style="width:80px;">${isLeague() ? 'Games' : 'Sets'} +/&minus;</th><th style="width:100px;">Qualified</th>`;
   head.innerHTML = headHtml;
   const qualifiers = tournamentQualifiers();
   const qualifiedIds = new Set(qualifiers.map(q=>q.id));
@@ -2172,7 +2487,8 @@ function updateName(id, val){
 function resetBoard(){
   if(!confirm("Clear all teams and scores for this event?")) return;
   const fresh = {
-    eventType: state.eventType || 'social',
+    eventType: state.eventType || 'mixmatch',
+    scoringMode: state.scoringMode || 'sets',
     category: state.category, rounds: 5, courts: state.courts || 3, teams: [], matchups: [], courtNames: [],
     playoffs: emptyPlayoffsShape(),
     playoffFormat: state.playoffFormat || 'qf',
@@ -2229,7 +2545,7 @@ function ranked(){
 // combines every group's standings (by points, then sets +/-) since there's
 // no single flat leaderboard the way mix & match / social boards have one.
 function overallRanked(){
-  if(state.eventType === 'tournament'){
+  if(isGroupMode()){
     ensureGroupsShape();
     const all = [];
     state.groups.forEach(g=>{
@@ -2254,8 +2570,8 @@ function medal(i){
 }
 
 function applyEventTypeUI(){
-  const t = state.eventType || 'social';
-  const isTournament = t === 'tournament';
+  const t = state.eventType || 'mixmatch';
+  const isTournament = t === 'tournament' || t === 'league';
   const show = (id, on) => { const el = document.getElementById(id); if(el) el.style.display = on ? '' : 'none'; };
   show('roundsCtrlWrap', !isTournament);
   show('addTeamBtn', !isTournament);
@@ -2271,7 +2587,7 @@ function applyEventTypeUI(){
 
 function render(){
   applyEventTypeUI();
-  if(state.eventType === 'tournament'){ renderTournamentTable(); return; }
+  if(isGroupMode()){ renderTournamentTable(); return; }
   document.getElementById('category').value = state.category;
   document.getElementById('roundCount').textContent = state.rounds;
 
@@ -2563,16 +2879,16 @@ function bracketMatchHTML(m){
   const played = decided || (m.scoreA > 0 || m.scoreB > 0);
   const aWin = decided && decided.winner === aName;
   const bWin = decided && decided.winner === bName;
-  const seedBadge = (s)=> (typeof s === 'number' && s>0) ? s : '';
+  const seedBadge = (s, tag)=> tag ? escHtml(String(tag).replace(/^#/,'')) : ((typeof s === 'number' && s>0) ? s : '');
   return `
     <div class="bracket-match">
       <div class="bracket-pill${aWin?' bp-win':''}">
-        <span class="bp-seed">${seedBadge(m.aSeed)}</span>
+        <span class="bp-seed">${seedBadge(m.aSeed, m.aTag)}</span>
         <span class="bp-name">${escHtml(aName)}</span>
         <span class="bp-score">${played ? m.scoreA : ''}</span>
       </div>
       <div class="bracket-pill${bWin?' bp-win':''}">
-        <span class="bp-seed">${seedBadge(m.bSeed)}</span>
+        <span class="bp-seed">${seedBadge(m.bSeed, m.bTag)}</span>
         <span class="bp-name">${escHtml(bName)}</span>
         <span class="bp-score">${played ? m.scoreB : ''}</span>
       </div>
@@ -2610,25 +2926,36 @@ function bracketColumnHTML(matches, label, roundClass){
 function renderBracketFlash(){
   ensurePlayoffsShape();
   const p = state.playoffs;
-  const stages = activeStages();
   const wrap = document.getElementById('bracketColumns');
-  const connector = (fromCount, toCount) => `
-    <div class="bracket-connector">
+  const connector = (fromCount, toCount, mirror) => `
+    <div class="bracket-connector${mirror?' mirror':''}">
       <div class="bracket-connector-spacer"></div>
-      <div class="bracket-connector-lines">${bracketConnectorHTML(fromCount, toCount)}</div>
+      <div class="bracket-connector-lines">${
+        fromCount===toCount
+          ? '<div class="conn-h" style="top:50%;left:0;width:100%;"></div>'
+          : bracketConnectorHTML(fromCount, toCount)
+      }</div>
     </div>`;
+  const cols = bracketLayoutColumns();
+  const mirrored = bracketIsMirrored();
+  wrap.classList.toggle('mirrored', mirrored);
   let html = '';
-  stages.forEach((stage, i)=>{
-    html += bracketColumnHTML(p[stage], PLAYOFF_STAGE_LABEL[stage], 'round-'+stage);
-    if(i < stages.length-1){
-      html += connector(PLAYOFF_STAGE_SIZE[stage], PLAYOFF_STAGE_SIZE[stages[i+1]]);
+  cols.forEach((col, i)=>{
+    html += bracketColumnHTML(col.idxs.map(k=>p[col.stage][k]), PLAYOFF_STAGE_LABEL[col.stage], 'round-'+col.stage);
+    const next = cols[i+1];
+    if(next){
+      // left side and single-direction brackets flow left->right (many -> fewer);
+      // the right side flows right->left, so its connectors are mirrored.
+      const a = col.idxs.length, b = next.idxs.length;
+      if(a >= b) html += connector(a, b, false);
+      else html += connector(b, a, true);
     }
   });
   wrap.innerHTML = html;
 
   const champBanner = document.getElementById('bracketChampion');
   const champ = decidedWinnerLoser(p.finals[0]);
-  champBanner.textContent = champ ? ('🏆 Champion: ' + champ.winner) : '';
+  champBanner.textContent = champ ? ('\uD83C\uDFC6 Champion: ' + champ.winner) : '';
   champBanner.style.display = champ ? '' : 'none';
 
   const overlay = document.getElementById('bracketFlash');
